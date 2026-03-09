@@ -6,31 +6,36 @@ const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
 
 // GET /api/contacts — Liste des contacts
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const search = searchParams.get('search') || '';
-  const type = searchParams.get('type') || undefined;
+  try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const type = searchParams.get('type') || undefined;
 
-  const contacts = await prisma.contact.findMany({
-    where: {
-      userId: TEMP_USER_ID,
-      deletedAt: null,
-      ...(type ? { type: type as 'CLIENT' | 'PROSPECT' | 'FOURNISSEUR' | 'SOUS_TRAITANT' } : {}),
-      ...(search
-        ? {
-            OR: [
-              { nom: { contains: search, mode: 'insensitive' } },
-              { prenom: { contains: search, mode: 'insensitive' } },
-              { entreprise: { contains: search, mode: 'insensitive' } },
-              { telephone: { contains: search } },
-              { email: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { nom: 'asc' },
-  });
+    const contacts = await prisma.contact.findMany({
+      where: {
+        userId: TEMP_USER_ID,
+        deletedAt: null,
+        ...(type ? { type: type as 'CLIENT' | 'PROSPECT' | 'FOURNISSEUR' | 'SOUS_TRAITANT' } : {}),
+        ...(search
+          ? {
+              OR: [
+                { nom: { contains: search, mode: 'insensitive' } },
+                { prenom: { contains: search, mode: 'insensitive' } },
+                { entreprise: { contains: search, mode: 'insensitive' } },
+                { telephone: { contains: search } },
+                { email: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { nom: 'asc' },
+    });
 
-  return NextResponse.json(contacts);
+    return NextResponse.json(contacts);
+  } catch (error) {
+    console.error('GET /api/contacts error:', error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
 }
 
 // POST /api/contacts — Creer un contact
