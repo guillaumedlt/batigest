@@ -155,7 +155,7 @@ export default function ModifierAchatPage({ params }: { params: Promise<{ id: st
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
               <input
@@ -243,7 +243,7 @@ export default function ModifierAchatPage({ params }: { params: Promise<{ id: st
 
         <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
           <h2 className="font-semibold text-gray-900">Montants</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Montant HT *</label>
               <input
