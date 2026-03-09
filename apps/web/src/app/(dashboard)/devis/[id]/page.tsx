@@ -413,12 +413,11 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
               {/* Transformer en facture */}
               {devis.statut === 'ACCEPTE' && (
-                <button disabled
+                <button onClick={() => router.push(`/factures/nouvelle?devisId=${devis.id}`)}
                   className="flex items-center gap-3 w-full p-3 rounded-xl bg-green-50 text-green-700
-                             hover:bg-green-100 transition-colors min-h-[48px] opacity-60">
+                             hover:bg-green-100 active:bg-green-200 transition-colors min-h-[48px]">
                   <Receipt size={20} />
                   <span className="font-medium">Transformer en facture</span>
-                  <span className="text-xs ml-auto">(bientôt)</span>
                 </button>
               )}
             </div>
