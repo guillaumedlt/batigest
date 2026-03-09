@@ -244,6 +244,7 @@ export default function CalendrierPage() {
       contactLabel: event.contact
         ? (event.contact.entreprise || `${event.contact.nom} ${event.contact.prenom || ''}`.trim())
         : '',
+      chantierId: '',
       adresse: event.adresse || '',
       notes: event.notes || '',
     });
