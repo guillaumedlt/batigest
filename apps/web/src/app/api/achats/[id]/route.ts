@@ -16,6 +16,7 @@ export async function GET(
       where: { id, userId: TEMP_USER_ID, deletedAt: null },
       include: {
         fournisseur: { select: { id: true, nom: true, prenom: true, entreprise: true, telephone: true } },
+        chantier: { select: { id: true, nom: true } },
       },
     });
 

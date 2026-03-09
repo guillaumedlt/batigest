@@ -14,6 +14,7 @@ type FicheAchat = {
   montantTTC: string;
   tauxTVA: string;
   chantierId: string | null;
+  chantier: { id: string; nom: string } | null;
   notes: string | null;
   photoUrl: string | null;
   createdAt: string;
@@ -174,12 +175,14 @@ export default function AchatDetailPage({ params }: { params: Promise<{ id: stri
             </div>
           )}
 
-          {achat.chantierId && (
+          {achat.chantier && (
             <div className="flex items-start gap-3">
               <MapPin size={16} className="text-gray-400 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Reference chantier</p>
-                <p className="font-medium text-gray-900">{achat.chantierId}</p>
+                <p className="text-sm text-gray-500">Chantier</p>
+                <Link href={`/chantiers/${achat.chantier.id}`} className="font-medium text-blue-600 hover:underline">
+                  {achat.chantier.nom}
+                </Link>
               </div>
             </div>
           )}

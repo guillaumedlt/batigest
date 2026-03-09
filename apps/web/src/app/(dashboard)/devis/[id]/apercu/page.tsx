@@ -117,11 +117,11 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {/* Document */}
-      <div className="bg-white shadow-lg rounded-2xl print:rounded-none print:shadow-none p-8 lg:p-12 print:p-0">
+      <div className="bg-white shadow-lg rounded-2xl print:rounded-none print:shadow-none p-4 sm:p-8 lg:p-12 print:p-0">
         {/* Header */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{entreprise.nomEntreprise}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{entreprise.nomEntreprise}</h1>
             <p className="text-sm text-gray-500 mt-1">{entreprise.adresse}</p>
             <p className="text-sm text-gray-500">{entreprise.codePostal} {entreprise.ville}</p>
             <p className="text-sm text-gray-500">Tél : {entreprise.telephone}</p>
@@ -129,7 +129,7 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
             {entreprise.siret && <p className="text-xs text-gray-400 mt-2">SIRET : {entreprise.siret}</p>}
             {entreprise.tvaIntracom && <p className="text-xs text-gray-400">TVA : {entreprise.tvaIntracom}</p>}
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <h2 className="text-xl font-bold text-blue-600">DEVIS</h2>
             <p className="text-lg font-semibold text-gray-900 mt-1">{devis.numero}</p>
             <p className="text-sm text-gray-500 mt-2">Date : {fmtDate(devis.dateCreation)}</p>
@@ -153,7 +153,8 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Lignes */}
-        <table className="w-full mb-6 text-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <table className="w-full mb-6 text-sm min-w-[500px]">
           <thead>
             <tr className="border-b-2 border-gray-200">
               <th className="text-left py-2 font-semibold text-gray-700">Désignation</th>
@@ -180,10 +181,11 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
             ))}
           </tbody>
         </table>
+        </div>
 
         {/* Totaux */}
         <div className="flex justify-end mb-8">
-          <div className="w-64 space-y-1">
+          <div className="w-full sm:w-64 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Total HT</span>
               <span className="font-medium">{fmt(devis.totalHT)}</span>
@@ -229,7 +231,7 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
 
         {/* Signature zone */}
         <div className="mt-8 flex justify-end">
-          <div className="border border-dashed border-gray-300 rounded-xl p-6 w-64 text-center">
+          <div className="border border-dashed border-gray-300 rounded-xl p-6 w-full sm:w-64 text-center">
             <p className="text-xs text-gray-400 mb-8">Bon pour accord</p>
             <p className="text-xs text-gray-400">Date et signature</p>
           </div>
