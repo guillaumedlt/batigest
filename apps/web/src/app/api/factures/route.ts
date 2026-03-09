@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
 
   const numero = `${prefix}-${year}-${String(sequenceNum).padStart(3, '0')}`;
 
+  // Si franchise en base, forcer TVA a 0
+  const isFranchise = entreprise?.franchiseTVA || entreprise?.regimeTVA === 'FRANCHISE';
+
   // Calculer les totaux
   const lignes = body.lignes || [];
   let totalHT = new Prisma.Decimal(0);
@@ -112,7 +115,7 @@ export async function POST(request: NextRequest) {
     const qte = new Prisma.Decimal(ligne.quantite);
     const prix = new Prisma.Decimal(ligne.prixUnitaireHT);
     const ligneHT = qte.mul(prix);
-    const taux = new Prisma.Decimal(ligne.tauxTVA);
+    const taux = isFranchise ? new Prisma.Decimal(0) : new Prisma.Decimal(ligne.tauxTVA);
     const ligneTVA = ligneHT.mul(taux).div(100);
 
     totalHT = totalHT.add(ligneHT);

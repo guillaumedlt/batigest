@@ -49,7 +49,8 @@ model Entreprise {
   assuranceDecennale    String? // Nom de l'assureur
   assuranceNumero       String? // Numero de police
   assuranceZone         String? // Zone de couverture
-  franchiseTVA          Boolean @default(false) // Auto-entrepreneur
+  franchiseTVA          Boolean @default(false) // Auto-entrepreneur / micro-entreprise
+  regimeTVA             String  @default("FRANCHISE") // FRANCHISE, REEL_SIMPLIFIE, REEL_NORMAL
   conditionsReglement   String? // Conditions par defaut
   mentionsDevis         String? // Mentions additionnelles devis
   mentionsFacture       String? // Mentions additionnelles factures
