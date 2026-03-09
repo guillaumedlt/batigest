@@ -66,35 +66,35 @@ export default function ContactsPage() {
         </Link>
       </div>
 
-      {/* Barre de recherche */}
-      <div className="relative">
-        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher un contact..."
-          className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-base
-                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
-
-      {/* Filtres par type */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
-        {['', 'CLIENT', 'PROSPECT', 'FOURNISSEUR', 'SOUS_TRAITANT'].map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilterType(type)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap min-h-[36px]
-                       transition-colors ${
-                         filterType === type
-                           ? 'bg-blue-600 text-white'
-                           : 'bg-gray-100 text-gray-600'
-                       }`}
-          >
-            {type === '' ? 'Tous' : TYPE_LABELS[type]}
-          </button>
-        ))}
+      {/* Recherche + filtres */}
+      <div className="flex flex-col lg:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher un contact..."
+            className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-base
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+          {['', 'CLIENT', 'PROSPECT', 'FOURNISSEUR', 'SOUS_TRAITANT'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilterType(type)}
+              className={`px-3 py-1.5 lg:px-4 lg:py-2.5 rounded-full text-sm font-medium whitespace-nowrap min-h-[36px] lg:min-h-[44px]
+                         transition-colors ${
+                           filterType === type
+                             ? 'bg-blue-600 text-white'
+                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                         }`}
+            >
+              {type === '' ? 'Tous' : TYPE_LABELS[type]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Liste des contacts */}
@@ -131,69 +131,140 @@ export default function ContactsPage() {
           )}
         </div>
       ) : (
-        <div className="space-y-2">
-          {contacts.map((contact) => (
-            <Link
-              key={contact.id}
-              href={`/contacts/${contact.id}`}
-              className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm
-                         active:bg-gray-50 transition-colors"
-            >
-              {/* Avatar */}
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-bold text-lg">
-                  {contact.nom[0].toUpperCase()}
-                </span>
-              </div>
-
-              {/* Infos */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900 truncate">
-                    {contact.nom}{contact.prenom ? ` ${contact.prenom}` : ''}
-                  </p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[contact.type]}`}>
-                    {TYPE_LABELS[contact.type]}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-                  {contact.entreprise && (
-                    <span className="flex items-center gap-1 truncate">
-                      <Building2 size={14} />
-                      {contact.entreprise}
-                    </span>
-                  )}
-                  {contact.ville && (
-                    <span className="truncate">{contact.ville}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Actions rapides */}
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <a
-                  href={`tel:${contact.telephone}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-2 rounded-full hover:bg-green-50 active:bg-green-100 transition-colors"
-                  aria-label="Appeler"
-                >
-                  <Phone size={20} className="text-green-600" />
-                </a>
-                {contact.email && (
-                  <a
-                    href={`mailto:${contact.email}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-2 rounded-full hover:bg-blue-50 active:bg-blue-100 transition-colors"
-                    aria-label="Envoyer un email"
+        <>
+          {/* Vue TABLEAU — desktop */}
+          <div className="hidden lg:block bg-white rounded-2xl shadow-sm overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Nom</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Type</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Entreprise</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Telephone</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Email</th>
+                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Ville</th>
+                  <th className="px-6 py-3"><span className="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {contacts.map((contact) => (
+                  <tr
+                    key={contact.id}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => window.location.href = `/contacts/${contact.id}`}
                   >
-                    <Mail size={20} className="text-blue-600" />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-blue-600 font-bold text-sm">{contact.nom[0].toUpperCase()}</span>
+                        </div>
+                        <span className="font-medium text-gray-900">
+                          {contact.nom}{contact.prenom ? ` ${contact.prenom}` : ''}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${TYPE_COLORS[contact.type]}`}>
+                        {TYPE_LABELS[contact.type]}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{contact.entreprise || '—'}</td>
+                    <td className="px-6 py-4">
+                      <a
+                        href={`tel:${contact.telephone}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm text-gray-900 hover:text-blue-600 transition-colors"
+                      >
+                        {contact.telephone}
+                      </a>
+                    </td>
+                    <td className="px-6 py-4">
+                      {contact.email ? (
+                        <a
+                          href={`mailto:${contact.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                        >
+                          {contact.email}
+                        </a>
+                      ) : <span className="text-sm text-gray-400">—</span>}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{contact.ville || '—'}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1">
+                        <a
+                          href={`tel:${contact.telephone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-2 rounded-lg hover:bg-green-50 transition-colors"
+                          aria-label="Appeler"
+                        >
+                          <Phone size={16} className="text-green-600" />
+                        </a>
+                        {contact.email && (
+                          <a
+                            href={`mailto:${contact.email}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                            aria-label="Email"
+                          >
+                            <Mail size={16} className="text-blue-600" />
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Vue CARDS — mobile */}
+          <div className="lg:hidden space-y-2">
+            {contacts.map((contact) => (
+              <Link
+                key={contact.id}
+                href={`/contacts/${contact.id}`}
+                className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm
+                           active:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-blue-600 font-bold text-lg">{contact.nom[0].toUpperCase()}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-900 truncate">
+                      {contact.nom}{contact.prenom ? ` ${contact.prenom}` : ''}
+                    </p>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[contact.type]}`}>
+                      {TYPE_LABELS[contact.type]}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                    {contact.entreprise && (
+                      <span className="flex items-center gap-1 truncate">
+                        <Building2 size={14} />{contact.entreprise}
+                      </span>
+                    )}
+                    {contact.ville && <span className="truncate">{contact.ville}</span>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <a href={`tel:${contact.telephone}`} onClick={(e) => e.stopPropagation()}
+                     className="p-2 rounded-full hover:bg-green-50 active:bg-green-100" aria-label="Appeler">
+                    <Phone size={20} className="text-green-600" />
                   </a>
-                )}
-                <ChevronRight size={20} className="text-gray-300" />
-              </div>
-            </Link>
-          ))}
-        </div>
+                  {contact.email && (
+                    <a href={`mailto:${contact.email}`} onClick={(e) => e.stopPropagation()}
+                       className="p-2 rounded-full hover:bg-blue-50 active:bg-blue-100" aria-label="Email">
+                      <Mail size={20} className="text-blue-600" />
+                    </a>
+                  )}
+                  <ChevronRight size={20} className="text-gray-300" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

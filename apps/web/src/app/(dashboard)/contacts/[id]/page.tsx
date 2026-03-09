@@ -82,125 +82,143 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
     .join(', ');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-4xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link
-            href="/contacts"
+          <Link href="/contacts"
             className="p-2 -ml-2 rounded-xl hover:bg-gray-100 active:bg-gray-200 transition-colors"
-            aria-label="Retour"
-          >
+            aria-label="Retour">
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{fullName}</h1>
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900">{fullName}</h1>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_COLORS[contact.type]}`}>
               {TYPE_LABELS[contact.type]}
             </span>
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => router.push(`/contacts/${id}/modifier`)}
-            className="p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200 transition-colors"
-            aria-label="Modifier"
-          >
+          <button onClick={() => router.push(`/contacts/${id}/modifier`)}
+            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
+                       text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <Edit3 size={16} /> Modifier
+          </button>
+          <button onClick={() => router.push(`/contacts/${id}/modifier`)}
+            className="lg:hidden p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200"
+            aria-label="Modifier">
             <Edit3 size={20} className="text-gray-600" />
           </button>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
+          <button onClick={handleDelete} disabled={deleting}
             className="p-2 rounded-xl hover:bg-red-50 active:bg-red-100 transition-colors"
-            aria-label="Supprimer"
-          >
+            aria-label="Supprimer">
             <Trash2 size={20} className="text-red-500" />
           </button>
         </div>
       </div>
 
-      {/* Actions rapides — gros boutons tactiles */}
-      <div className="grid grid-cols-4 gap-2">
-        <a
-          href={`tel:${contact.telephone}`}
-          className="flex flex-col items-center gap-1.5 bg-green-50 rounded-2xl py-4
-                     active:bg-green-100 transition-colors"
-        >
-          <Phone size={24} className="text-green-600" />
-          <span className="text-xs font-medium text-green-700">Appeler</span>
-        </a>
-        <a
-          href={`sms:${contact.telephone}`}
-          className="flex flex-col items-center gap-1.5 bg-blue-50 rounded-2xl py-4
-                     active:bg-blue-100 transition-colors"
-        >
-          <MessageSquare size={24} className="text-blue-600" />
-          <span className="text-xs font-medium text-blue-700">SMS</span>
-        </a>
-        {contact.email && (
-          <a
-            href={`mailto:${contact.email}`}
-            className="flex flex-col items-center gap-1.5 bg-purple-50 rounded-2xl py-4
-                       active:bg-purple-100 transition-colors"
-          >
-            <Mail size={24} className="text-purple-600" />
-            <span className="text-xs font-medium text-purple-700">Email</span>
-          </a>
-        )}
-        {fullAddress && (
-          <a
-            href={`https://maps.apple.com/?q=${encodeURIComponent(fullAddress)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center gap-1.5 bg-amber-50 rounded-2xl py-4
-                       active:bg-amber-100 transition-colors"
-          >
-            <Navigation size={24} className="text-amber-600" />
-            <span className="text-xs font-medium text-amber-700">GPS</span>
-          </a>
-        )}
-      </div>
+      {/* Layout 2 colonnes desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        {/* Colonne gauche — infos + actions rapides */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Actions rapides — gros boutons tactiles */}
+          <div className="grid grid-cols-4 gap-2 lg:gap-3">
+            <ActionButton href={`tel:${contact.telephone}`} icon={Phone} label="Appeler"
+              color="bg-green-50 text-green-600 active:bg-green-100" />
+            <ActionButton href={`sms:${contact.telephone}`} icon={MessageSquare} label="SMS"
+              color="bg-blue-50 text-blue-600 active:bg-blue-100" />
+            {contact.email && (
+              <ActionButton href={`mailto:${contact.email}`} icon={Mail} label="Email"
+                color="bg-purple-50 text-purple-600 active:bg-purple-100" />
+            )}
+            {fullAddress && (
+              <ActionButton
+                href={`https://maps.apple.com/?q=${encodeURIComponent(fullAddress)}`}
+                icon={Navigation} label="GPS" target="_blank"
+                color="bg-amber-50 text-amber-600 active:bg-amber-100" />
+            )}
+          </div>
 
-      {/* Informations */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-4">
-        <h2 className="font-semibold text-gray-900">Informations</h2>
+          {/* Informations */}
+          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h2 className="font-semibold text-gray-900 mb-4">Informations</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {contact.entreprise && (
+                <InfoRow icon={<Building2 size={18} />} label="Entreprise" value={contact.entreprise} />
+              )}
+              <InfoRow icon={<Phone size={18} />} label="Telephone" value={contact.telephone} />
+              {contact.email && (
+                <InfoRow icon={<Mail size={18} />} label="Email" value={contact.email} />
+              )}
+              {fullAddress && (
+                <InfoRow icon={<MapPin size={18} />} label="Adresse" value={fullAddress} />
+              )}
+              {contact.siret && (
+                <InfoRow icon={<FileText size={18} />} label="SIRET" value={contact.siret} />
+              )}
+            </div>
+          </div>
 
-        {contact.entreprise && (
-          <InfoRow icon={<Building2 size={18} />} label="Entreprise" value={contact.entreprise} />
-        )}
-        <InfoRow icon={<Phone size={18} />} label="Telephone" value={contact.telephone} />
-        {contact.email && (
-          <InfoRow icon={<Mail size={18} />} label="Email" value={contact.email} />
-        )}
-        {fullAddress && (
-          <InfoRow icon={<MapPin size={18} />} label="Adresse" value={fullAddress} />
-        )}
-        {contact.siret && (
-          <InfoRow icon={<FileText size={18} />} label="SIRET" value={contact.siret} />
-        )}
-      </div>
-
-      {/* Notes */}
-      {contact.notes && (
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <h2 className="font-semibold text-gray-900 mb-2">Notes</h2>
-          <p className="text-gray-600 text-sm whitespace-pre-wrap">{contact.notes}</p>
+          {/* Notes */}
+          {contact.notes && (
+            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+              <h2 className="font-semibold text-gray-900 mb-2">Notes</h2>
+              <p className="text-gray-600 whitespace-pre-wrap">{contact.notes}</p>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Actions */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-2">
-        <h2 className="font-semibold text-gray-900 mb-2">Actions</h2>
-        <Link
-          href={`/devis/nouveau?contactId=${contact.id}`}
-          className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100
-                     transition-colors min-h-[48px]"
-        >
-          <FileText size={20} className="text-blue-600" />
-          <span className="font-medium">Creer un devis</span>
-        </Link>
+        {/* Colonne droite — actions et historique */}
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h2 className="font-semibold text-gray-900 mb-3">Actions</h2>
+            <div className="space-y-2">
+              <Link href={`/devis/nouveau?contactId=${contact.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100
+                           transition-colors min-h-[48px]">
+                <FileText size={20} className="text-blue-600" />
+                <span className="font-medium">Creer un devis</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Historique (placeholder) */}
+          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h2 className="font-semibold text-gray-900 mb-3">Historique</h2>
+            <p className="text-sm text-gray-400 text-center py-4">
+              Aucun devis ou facture pour ce contact
+            </p>
+          </div>
+        </div>
       </div>
     </div>
+  );
+}
+
+function ActionButton({
+  href,
+  icon: Icon,
+  label,
+  color,
+  target,
+}: {
+  href: string;
+  icon: React.ComponentType<{ size?: number }>;
+  label: string;
+  color: string;
+  target?: string;
+}) {
+  return (
+    <a
+      href={href}
+      target={target}
+      rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+      className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl
+                 transition-colors min-h-[72px] ${color}`}
+    >
+      <Icon size={24} />
+      <span className="text-xs font-medium">{label}</span>
+    </a>
   );
 }
 

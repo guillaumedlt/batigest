@@ -16,7 +16,7 @@ export default function FAB() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 pb-[env(safe-area-inset-bottom)]">
+    <div className="lg:hidden fixed bottom-20 right-4 z-50 pb-[env(safe-area-inset-bottom)]">
       <AnimatePresence>
         {open && (
           <>
