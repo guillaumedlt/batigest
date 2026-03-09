@@ -18,7 +18,8 @@ export default function VoiceButton() {
   const [action, setAction] = useState<VoiceAction | null>(null);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   const startListening = useCallback(() => {
     setError('');
@@ -26,7 +27,8 @@ export default function VoiceButton() {
     setAction(null);
     setAnswer('');
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       setError('La reconnaissance vocale n\'est pas supportée par votre navigateur.');
       return;
@@ -37,7 +39,8 @@ export default function VoiceButton() {
     recognition.continuous = false;
     recognition.interimResults = true;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = (event: any) => {
       let text = '';
       for (let i = 0; i < event.results.length; i++) {
         text += event.results[i][0].transcript;
@@ -50,7 +53,8 @@ export default function VoiceButton() {
       }
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (event: any) => {
       setListening(false);
       if (event.error === 'no-speech') {
         setError('Aucune voix détectée. Réessayez.');
@@ -260,10 +264,3 @@ export default function VoiceButton() {
   );
 }
 
-// TypeScript declarations for Web Speech API
-declare global {
-  interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
-  }
-}
