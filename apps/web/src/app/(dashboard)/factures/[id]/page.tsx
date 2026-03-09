@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Trash2, Send, CheckCircle2, Ban, CreditCard,
-  Clock, AlertCircle, Receipt, Calendar, FileText, Plus,
+  Clock, AlertCircle, Receipt, Calendar, FileText, Plus, Eye,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -423,6 +423,14 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
                   <span className="font-medium">Enregistrer un paiement</span>
                 </button>
               )}
+
+              {/* Aperçu PDF */}
+              <button onClick={() => router.push(`/factures/${id}/apercu`)}
+                className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50
+                           active:bg-gray-100 transition-colors min-h-[48px]">
+                <Eye size={20} className="text-gray-500" />
+                <span className="font-medium text-gray-700">Aperçu / PDF</span>
+              </button>
 
               {facture.statut !== 'ANNULEE' && facture.statut !== 'BROUILLON' && (
                 <button onClick={() => updateStatut('ANNULEE')} disabled={updating}

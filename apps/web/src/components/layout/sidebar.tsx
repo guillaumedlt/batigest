@@ -13,10 +13,13 @@ import {
   Wallet,
   Globe,
   Settings,
+  HardHat,
+  Library,
 } from 'lucide-react';
 
 const mainNav = [
   { href: '/', label: 'Tableau de bord', icon: Home },
+  { href: '/chantiers', label: 'Chantiers', icon: HardHat },
   { href: '/contacts', label: 'Contacts', icon: Users },
   { href: '/devis', label: 'Devis', icon: FileText },
   { href: '/factures', label: 'Factures', icon: Receipt },
@@ -24,6 +27,7 @@ const mainNav = [
 
 const secondaryNav = [
   { href: '/achats', label: 'Achats', icon: ShoppingCart },
+  { href: '/prestations', label: 'Prestations', icon: Library },
   { href: '/tva', label: 'TVA', icon: Calculator },
   { href: '/calendrier', label: 'Calendrier', icon: Calendar },
   { href: '/frais', label: 'Notes de frais', icon: Wallet },

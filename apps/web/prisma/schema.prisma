@@ -26,6 +26,7 @@ model User {
   evenements Evenement[]
   notesFrais NoteFrais[]
   miniSite   MiniSite?
+  chantiers  Chantier[]
 
   @@map("users")
 }
@@ -54,6 +55,7 @@ model Entreprise {
   conditionsReglement   String? // Conditions par defaut
   mentionsDevis         String? // Mentions additionnelles devis
   mentionsFacture       String? // Mentions additionnelles factures
+  rib                   String? // IBAN pour documents
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -93,6 +95,7 @@ model Contact {
   factures    Facture[]
   achats      FicheAchat[]
   evenements  Evenement[]
+  chantiers   Chantier[]
 
   @@index([userId, type])
   @@index([userId, nom])
@@ -107,6 +110,47 @@ enum ContactType {
 }
 
 // ============================================
+// MODULE CHANTIERS / PROJETS
+// ============================================
+
+model Chantier {
+  id          String          @id @default(uuid()) @db.Uuid
+  userId      String          @db.Uuid
+  user        User            @relation(fields: [userId], references: [id])
+  nom         String
+  clientId    String?         @db.Uuid
+  client      Contact?        @relation(fields: [clientId], references: [id])
+  adresse     String?
+  codePostal  String?
+  ville       String?
+  statut      ChantierStatut  @default(EN_ATTENTE)
+  dateDebut   DateTime?
+  dateFin     DateTime?
+  description String?
+  notes       String?
+  budgetPrevu Decimal?        @db.Decimal(12, 2)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  devis       Devis[]
+  factures    Facture[]
+  achats      FicheAchat[]
+  evenements  Evenement[]
+  frais       NoteFrais[]
+
+  @@index([userId, statut])
+  @@map("chantiers")
+}
+
+enum ChantierStatut {
+  EN_ATTENTE
+  EN_COURS
+  TERMINE
+  GARANTIE
+}
+
+// ============================================
 // MODULE 2 — DEVIS
 // ============================================
 
@@ -116,6 +160,8 @@ model Devis {
   user          User        @relation(fields: [userId], references: [id])
   contactId     String      @db.Uuid
   contact       Contact     @relation(fields: [contactId], references: [id])
+  chantierId    String?     @db.Uuid
+  chantier      Chantier?   @relation(fields: [chantierId], references: [id])
   numero        String      @unique // D-2026-001
   objet         String
   dateCreation  DateTime    @default(now())
@@ -179,6 +225,8 @@ model Facture {
   contact         Contact       @relation(fields: [contactId], references: [id])
   devisId         String?       @db.Uuid
   devis           Devis?        @relation(fields: [devisId], references: [id])
+  chantierId      String?       @db.Uuid
+  chantier        Chantier?     @relation(fields: [chantierId], references: [id])
   numero          String        @unique // F-2026-001 ou A-2026-001
   type            FactureType
   dateEmission    DateTime      @default(now())
@@ -267,6 +315,8 @@ model FicheAchat {
   user          User            @relation(fields: [userId], references: [id])
   fournisseurId String?         @db.Uuid
   fournisseur   Contact?        @relation(fields: [fournisseurId], references: [id])
+  chantierId    String?         @db.Uuid
+  chantier      Chantier?       @relation(fields: [chantierId], references: [id])
   date          DateTime
   designation   String
   categorie     CategorieAchat
@@ -275,7 +325,6 @@ model FicheAchat {
   montantTTC    Decimal         @db.Decimal(12, 2)
   photoUrl      String?
   notes         String?
-  chantierId    String?         // Reference libre au chantier
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
@@ -308,6 +357,8 @@ model Evenement {
   journeeEntiere Boolean       @default(false)
   contactId      String?       @db.Uuid
   contact        Contact?      @relation(fields: [contactId], references: [id])
+  chantierId     String?       @db.Uuid
+  chantier       Chantier?     @relation(fields: [chantierId], references: [id])
   adresse        String?
   notes          String?
   rappel         Int?          // Minutes avant l'evenement
@@ -342,7 +393,8 @@ model NoteFrais {
   tva         Decimal?      @db.Decimal(12, 2)
   description String
   photoUrl    String?
-  chantierId  String?
+  chantierId  String?       @db.Uuid
+  chantier    Chantier?     @relation(fields: [chantierId], references: [id])
   km          Decimal?      @db.Decimal(8, 1) // Pour indemnites km
   remboursee  Boolean       @default(false)
   createdAt   DateTime      @default(now())

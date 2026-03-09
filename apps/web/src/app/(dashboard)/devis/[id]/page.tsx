@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Edit3, Trash2, Send, CheckCircle2, XCircle, Copy, Receipt,
-  Clock, AlertTriangle, FileText, User, Calendar, MapPin,
+  Clock, AlertTriangle, FileText, User, Calendar, MapPin, Eye,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -402,6 +402,14 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                   </button>
                 </>
               )}
+
+              {/* Aperçu PDF */}
+              <button onClick={() => router.push(`/devis/${id}/apercu`)}
+                className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50
+                           active:bg-gray-100 transition-colors min-h-[48px]">
+                <Eye size={20} className="text-gray-500" />
+                <span className="font-medium text-gray-700">Aperçu / PDF</span>
+              </button>
 
               {/* Dupliquer */}
               <button onClick={handleDuplicate} disabled={updating}

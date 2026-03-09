@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   Home,
-  Users,
+  HardHat,
   FileText,
   Receipt,
   MoreHorizontal,
@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { href: '/', label: 'Accueil', icon: Home },
-  { href: '/contacts', label: 'Contacts', icon: Users },
+  { href: '/chantiers', label: 'Chantiers', icon: HardHat },
   { href: '/devis', label: 'Devis', icon: FileText },
   { href: '/factures', label: 'Factures', icon: Receipt },
   { href: '/plus', label: 'Plus', icon: MoreHorizontal },
