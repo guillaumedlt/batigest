@@ -1,0 +1,23 @@
+{
+  "name": "batigest",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "db:generate": "npm run generate --workspace=@batigest/db",
+    "db:push": "npm run push --workspace=@batigest/db",
+    "db:migrate": "npm run migrate --workspace=@batigest/db",
+    "db:studio": "npm run studio --workspace=@batigest/db"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.16",
+    "turbo": "^2"
+  },
+  "packageManager": "npm@10.8.0"
+}
