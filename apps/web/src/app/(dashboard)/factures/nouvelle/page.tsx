@@ -1,11 +1,26 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Save,
 } from 'lucide-react';
 import Link from 'next/link';
+
+// Wrapper pour Suspense (useSearchParams necessite un Suspense boundary)
+export default function NouvelleFacturePageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-4 animate-pulse max-w-5xl">
+        <div className="h-8 bg-gray-200 rounded w-1/3" />
+        <div className="h-24 bg-gray-200 rounded-2xl" />
+        <div className="h-48 bg-gray-200 rounded-2xl" />
+      </div>
+    }>
+      <NouvelleFacturePage />
+    </Suspense>
+  );
+}
 
 type Contact = {
   id: string;
@@ -51,7 +66,7 @@ function formatEuros(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n);
 }
 
-export default function NouvelleFacturePage() {
+function NouvelleFacturePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const devisId = searchParams.get('devisId');
