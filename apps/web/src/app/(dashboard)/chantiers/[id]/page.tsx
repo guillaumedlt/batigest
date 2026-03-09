@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Trash2, Edit3, MapPin, Calendar, User, FileText, Receipt,
-  ShoppingCart, Wallet, HardHat, TrendingUp, AlertCircle, CheckCircle2,
+  ShoppingCart, Wallet, HardHat, TrendingUp, AlertCircle, CheckCircle2, Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -436,6 +436,33 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
                   <span className="font-medium">Passer en garantie</span>
                 </button>
               )}
+            </div>
+          </div>
+
+          {/* Quick-create links */}
+          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Créer</h2>
+            <div className="space-y-2">
+              <Link href={`/devis/nouveau?chantierId=${c.id}${c.client ? `&contactId=${c.client.id}` : ''}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[48px]">
+                <Plus size={18} className="text-blue-600" />
+                <span className="text-sm font-medium text-gray-700">Nouveau devis</span>
+              </Link>
+              <Link href={`/factures/nouvelle?chantierId=${c.id}${c.client ? `&contactId=${c.client.id}` : ''}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[48px]">
+                <Plus size={18} className="text-green-600" />
+                <span className="text-sm font-medium text-gray-700">Nouvelle facture</span>
+              </Link>
+              <Link href={`/achats/nouveau?chantierId=${c.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[48px]">
+                <Plus size={18} className="text-orange-600" />
+                <span className="text-sm font-medium text-gray-700">Nouvel achat</span>
+              </Link>
+              <Link href={`/frais/nouveau?chantierId=${c.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[48px]">
+                <Plus size={18} className="text-purple-600" />
+                <span className="text-sm font-medium text-gray-700">Nouveau frais</span>
+              </Link>
             </div>
           </div>
 

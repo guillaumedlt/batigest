@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Trash2, Send, CheckCircle2, Ban, CreditCard,
-  Clock, AlertCircle, Receipt, Calendar, FileText, Plus, Eye,
+  Clock, AlertCircle, Receipt, Calendar, FileText, Plus, Eye, MapPin,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -52,6 +52,7 @@ type FactureDetail = {
     telephone: string;
     email: string | null;
   };
+  chantier: { id: string; nom: string } | null;
   devis: { id: string; numero: string; objet: string } | null;
   lignes: FactureLigne[];
   paiements: Paiement[];
@@ -266,6 +267,19 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </Link>
           </div>
+
+          {/* Chantier */}
+          {facture.chantier && (
+            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Chantier</h2>
+              <Link href={`/chantiers/${facture.chantier.id}`} className="flex items-center gap-2 group">
+                <MapPin size={16} className="text-gray-400" />
+                <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {facture.chantier.nom}
+                </span>
+              </Link>
+            </div>
+          )}
 
           {/* Lignes */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">

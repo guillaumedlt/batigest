@@ -30,6 +30,9 @@ export async function GET(request: NextRequest) {
       contact: {
         select: { id: true, nom: true, prenom: true, entreprise: true },
       },
+      chantier: {
+        select: { id: true, nom: true },
+      },
       _count: { select: { lignes: true } },
     },
     orderBy: { dateCreation: 'desc' },
@@ -138,6 +141,7 @@ export async function POST(request: NextRequest) {
     data: {
       userId: TEMP_USER_ID,
       contactId: body.contactId,
+      chantierId: body.chantierId || null,
       numero,
       objet: body.objet,
       dateValidite,

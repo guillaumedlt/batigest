@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 type ContactOption = {
@@ -33,8 +33,17 @@ const TVA_RATES = [
   { value: '0', label: '0%' },
 ];
 
-export default function NouvelAchatPage() {
+export default function NouvelAchatPageWrapper() {
+  return (
+    <Suspense fallback={<div className="animate-pulse"><div className="h-8 bg-gray-200 rounded w-1/3" /></div>}>
+      <NouvelAchatPage />
+    </Suspense>
+  );
+}
+
+function NouvelAchatPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [fournisseurs, setFournisseurs] = useState<ContactOption[]>([]);
   const [fournisseurSearch, setFournisseurSearch] = useState('');
@@ -49,7 +58,7 @@ export default function NouvelAchatPage() {
     tauxTVA: '20',
     fournisseurId: '',
     fournisseurLabel: '',
-    chantierId: '',
+    chantierId: searchParams.get('chantierId') || '',
     notes: '',
   });
 

@@ -15,6 +15,7 @@ export async function GET(
     where: { id, userId: TEMP_USER_ID, deletedAt: null },
     include: {
       contact: true,
+      chantier: { select: { id: true, nom: true } },
       devis: { select: { id: true, numero: true, objet: true } },
       lignes: { orderBy: { ordre: 'asc' } },
       paiements: { orderBy: { date: 'desc' } },

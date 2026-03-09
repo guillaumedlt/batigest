@@ -34,6 +34,9 @@ export async function GET(request: NextRequest) {
       devis: {
         select: { id: true, numero: true, objet: true },
       },
+      chantier: {
+        select: { id: true, nom: true },
+      },
       _count: { select: { lignes: true, paiements: true } },
     },
     orderBy: { dateEmission: 'desc' },
@@ -147,6 +150,7 @@ export async function POST(request: NextRequest) {
       userId: TEMP_USER_ID,
       contactId: body.contactId,
       devisId: body.devisId || null,
+      chantierId: body.chantierId || null,
       numero,
       type: factureType,
       dateEcheance,

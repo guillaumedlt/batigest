@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Phone, Mail, MapPin, Building2,
-  FileText, Trash2, Edit3, Navigation, MessageSquare,
+  FileText, Trash2, Edit3, Navigation, MessageSquare, Receipt, Hammer,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -23,6 +23,9 @@ type Contact = {
   notes: string | null;
   tags: string[];
   createdAt: string;
+  devis: { id: string; numero: string; objet: string; statut: string; totalTTC: string; dateCreation: string }[];
+  factures: { id: string; numero: string; type: string; statut: string; totalTTC: string; resteARegler: string; dateEmission: string }[];
+  chantiers: { id: string; nom: string; statut: string; dateDebut: string | null }[];
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -38,6 +41,33 @@ const TYPE_COLORS: Record<string, string> = {
   FOURNISSEUR: 'bg-amber-100 text-amber-700',
   SOUS_TRAITANT: 'bg-purple-100 text-purple-700',
 };
+
+const DEVIS_STATUT: Record<string, string> = {
+  BROUILLON: 'bg-gray-100 text-gray-600',
+  ENVOYE: 'bg-blue-100 text-blue-700',
+  ACCEPTE: 'bg-green-100 text-green-700',
+  REFUSE: 'bg-red-100 text-red-700',
+  EXPIRE: 'bg-amber-100 text-amber-700',
+};
+
+const FACTURE_STATUT: Record<string, string> = {
+  BROUILLON: 'bg-gray-100 text-gray-600',
+  EMISE: 'bg-blue-100 text-blue-700',
+  PAYEE_PARTIELLEMENT: 'bg-amber-100 text-amber-700',
+  PAYEE: 'bg-green-100 text-green-700',
+  ANNULEE: 'bg-red-100 text-red-700',
+};
+
+const CHANTIER_STATUT: Record<string, string> = {
+  EN_ATTENTE: 'bg-gray-100 text-gray-600',
+  EN_COURS: 'bg-blue-100 text-blue-700',
+  TERMINE: 'bg-green-100 text-green-700',
+  GARANTIE: 'bg-purple-100 text-purple-700',
+};
+
+function formatEuros(value: string | number) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value));
+}
 
 export default function ContactDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -179,15 +209,93 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                 <FileText size={20} className="text-blue-600" />
                 <span className="font-medium">Creer un devis</span>
               </Link>
+              <Link href={`/factures/nouvelle?contactId=${contact.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100
+                           transition-colors min-h-[48px]">
+                <Receipt size={20} className="text-green-600" />
+                <span className="font-medium">Creer une facture</span>
+              </Link>
             </div>
           </div>
 
-          {/* Historique (placeholder) */}
+          {/* Historique */}
           <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
             <h2 className="font-semibold text-gray-900 mb-3">Historique</h2>
-            <p className="text-sm text-gray-400 text-center py-4">
-              Aucun devis ou facture pour ce contact
-            </p>
+            {contact.devis.length === 0 && contact.factures.length === 0 && contact.chantiers.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">
+                Aucun devis, facture ou chantier pour ce contact
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {/* Chantiers */}
+                {contact.chantiers.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Chantiers</p>
+                    <div className="space-y-1.5">
+                      {contact.chantiers.map((ch) => (
+                        <Link key={ch.id} href={`/chantiers/${ch.id}`}
+                          className="flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center gap-2">
+                            <Hammer size={14} className="text-gray-400" />
+                            <span className="text-sm font-medium text-gray-900">{ch.nom}</span>
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${CHANTIER_STATUT[ch.statut] || ''}`}>
+                            {ch.statut.replace('_', ' ')}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Devis */}
+                {contact.devis.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Devis</p>
+                    <div className="space-y-1.5">
+                      {contact.devis.map((d) => (
+                        <Link key={d.id} href={`/devis/${d.id}`}
+                          className="flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{d.numero}</p>
+                            <p className="text-xs text-gray-400">{d.objet}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-gray-900">{formatEuros(d.totalTTC)}</p>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${DEVIS_STATUT[d.statut] || ''}`}>
+                              {d.statut}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Factures */}
+                {contact.factures.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Factures</p>
+                    <div className="space-y-1.5">
+                      {contact.factures.map((f) => (
+                        <Link key={f.id} href={`/factures/${f.id}`}
+                          className="flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{f.numero}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-gray-900">{formatEuros(f.totalTTC)}</p>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${FACTURE_STATUT[f.statut] || ''}`}>
+                              {f.statut.replace('_', ' ')}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

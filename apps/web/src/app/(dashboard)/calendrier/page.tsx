@@ -55,6 +55,7 @@ const TYPE_BG: Record<string, string> = {
 };
 
 const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const JOURS_MOBILE = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 const MOIS = [
   'Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre',
@@ -110,6 +111,11 @@ function formatTimeInput(date: Date) {
   return date.toTimeString().slice(0, 5);
 }
 
+type ChantierOption = {
+  id: string;
+  nom: string;
+};
+
 const emptyForm = {
   titre: '',
   type: 'CHANTIER',
@@ -120,6 +126,7 @@ const emptyForm = {
   journeeEntiere: false,
   contactId: '',
   contactLabel: '',
+  chantierId: '',
   adresse: '',
   notes: '',
 };
@@ -138,6 +145,7 @@ export default function CalendrierPage() {
   const [contacts, setContacts] = useState<ContactOption[]>([]);
   const [contactSearch, setContactSearch] = useState('');
   const [showContactDropdown, setShowContactDropdown] = useState(false);
+  const [chantiersList, setChantiersList] = useState<ChantierOption[]>([]);
 
   const days = getMonthDays(currentYear, currentMonth);
 
@@ -154,6 +162,12 @@ export default function CalendrierPage() {
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);
+
+  useEffect(() => {
+    fetch('/api/chantiers')
+      .then((r) => r.json())
+      .then((data: ChantierOption[]) => setChantiersList(data));
+  }, []);
 
   useEffect(() => {
     if (contactSearch.length >= 2) {
@@ -256,6 +270,7 @@ export default function CalendrierPage() {
       dateFin,
       journeeEntiere: form.journeeEntiere,
       contactId: form.contactId || null,
+      chantierId: form.chantierId || null,
       adresse: form.adresse || null,
       notes: form.notes || null,
     };
@@ -328,9 +343,10 @@ export default function CalendrierPage() {
         {/* Calendar grid */}
         <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-xl overflow-hidden">
           {/* Day headers */}
-          {JOURS.map((j) => (
-            <div key={j} className="bg-gray-50 text-center py-2 text-xs font-semibold text-gray-500 uppercase">
-              {j}
+          {JOURS.map((j, idx) => (
+            <div key={j} className="bg-gray-50 text-center py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase">
+              <span className="sm:hidden">{JOURS_MOBILE[idx]}</span>
+              <span className="hidden sm:inline">{j}</span>
             </div>
           ))}
 
@@ -348,16 +364,16 @@ export default function CalendrierPage() {
                   setSelectedEvent(null);
                 }}
                 onDoubleClick={() => openCreateModal(day.date)}
-                className={`bg-white min-h-[80px] sm:min-h-[100px] p-1 cursor-pointer transition-colors
+                className={`bg-white min-h-[56px] sm:min-h-[80px] md:min-h-[100px] p-0.5 sm:p-1 cursor-pointer transition-colors
                            hover:bg-blue-50/50
                            ${!day.isCurrentMonth ? 'opacity-40' : ''}
                            ${isSelected ? 'ring-2 ring-blue-500 ring-inset' : ''}`}
               >
-                <div className={`text-sm font-medium mb-0.5 w-7 h-7 flex items-center justify-center rounded-full
+                <div className={`text-[11px] sm:text-sm font-medium mb-0.5 w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center rounded-full mx-auto sm:mx-0
                                 ${isToday ? 'bg-blue-600 text-white' : 'text-gray-700'}`}>
                   {day.date.getDate()}
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 hidden sm:block">
                   {dayEvents.slice(0, 3).map((ev) => (
                     <button
                       key={ev.id}
@@ -366,19 +382,28 @@ export default function CalendrierPage() {
                         setSelectedEvent(ev);
                         setSelectedDate(new Date(ev.dateDebut));
                       }}
-                      className={`w-full text-left text-[10px] sm:text-xs px-1.5 py-0.5 rounded truncate
+                      className={`w-full text-left text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded truncate
                                  ${TYPE_BG[ev.type] || 'bg-gray-50 text-gray-700'} border`}
                     >
                       {!ev.journeeEntiere && (
-                        <span className="font-medium">{formatTime(ev.dateDebut)} </span>
+                        <span className="font-medium hidden md:inline">{formatTime(ev.dateDebut)} </span>
                       )}
                       {ev.titre}
                     </button>
                   ))}
                   {dayEvents.length > 3 && (
-                    <p className="text-[10px] text-gray-400 px-1">+{dayEvents.length - 3} autres</p>
+                    <p className="text-[10px] text-gray-400 px-1">+{dayEvents.length - 3}</p>
                   )}
                 </div>
+                {/* Mobile: dots only */}
+                {dayEvents.length > 0 && (
+                  <div className="flex gap-0.5 justify-center mt-0.5 sm:hidden">
+                    {dayEvents.slice(0, 3).map((ev) => (
+                      <div key={ev.id} className={`w-1.5 h-1.5 rounded-full ${TYPE_COLORS[ev.type]}`} />
+                    ))}
+                    {dayEvents.length > 3 && <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -541,7 +566,7 @@ export default function CalendrierPage() {
                 <span className="text-sm font-medium text-gray-700">Journee entiere</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date debut *</label>
                   <input
@@ -634,6 +659,21 @@ export default function CalendrierPage() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Chantier (optionnel)</label>
+                <select
+                  value={form.chantierId}
+                  onChange={(e) => setForm({ ...form, chantierId: e.target.value })}
+                  className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base
+                             focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Aucun chantier</option>
+                  {chantiersList.map((ch) => (
+                    <option key={ch.id} value={ch.id}>{ch.nom}</option>
+                  ))}
+                </select>
               </div>
 
               <div>

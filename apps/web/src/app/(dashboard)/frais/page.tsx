@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Wallet, Car, Utensils, ParkingCircle, Package, CircleDollarSign, CheckCircle2, Filter } from 'lucide-react';
+import { Plus, Search, Wallet, Car, Utensils, ParkingCircle, Package, CircleDollarSign, CheckCircle2, Filter, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 type NoteFrais = {
@@ -14,6 +14,7 @@ type NoteFrais = {
   km: string | null;
   remboursee: boolean;
   chantierId: string | null;
+  chantier: { id: string; nom: string } | null;
 };
 
 type Stats = {
@@ -207,6 +208,12 @@ export default function FraisPage() {
                           {CATEGORIE_LABELS[note.categorie]}
                         </span>
                         {note.km && <span>{note.km} km</span>}
+                        {note.chantier && (
+                          <Link href={`/chantiers/${note.chantier.id}`} className="flex items-center gap-0.5 text-blue-600 hover:underline">
+                            <MapPin size={10} />
+                            {note.chantier.nom}
+                          </Link>
+                        )}
                       </div>
                     </div>
                     <div className="text-right">

@@ -1,11 +1,25 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, Save, Eye,
 } from 'lucide-react';
 import Link from 'next/link';
+
+export default function NouveauDevisPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-4 animate-pulse max-w-5xl">
+        <div className="h-8 bg-gray-200 rounded w-1/3" />
+        <div className="h-24 bg-gray-200 rounded-2xl" />
+        <div className="h-48 bg-gray-200 rounded-2xl" />
+      </div>
+    }>
+      <NouveauDevisPage />
+    </Suspense>
+  );
+}
 
 type Contact = {
   id: string;
@@ -13,6 +27,11 @@ type Contact = {
   prenom: string | null;
   entreprise: string | null;
   type: string;
+};
+
+type ChantierOption = {
+  id: string;
+  nom: string;
 };
 
 type LigneDevis = {
@@ -56,11 +75,14 @@ function formatEuros(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n);
 }
 
-export default function NouveauDevisPage() {
+function NouveauDevisPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [contactId, setContactId] = useState('');
+  const [contactId, setContactId] = useState(searchParams.get('contactId') || '');
   const [contactSearch, setContactSearch] = useState('');
+  const [chantiers, setChantiers] = useState<ChantierOption[]>([]);
+  const [chantierId, setChantierId] = useState(searchParams.get('chantierId') || '');
   const [showContactDropdown, setShowContactDropdown] = useState(false);
   const [objet, setObjet] = useState('');
   const [dateValidite, setDateValidite] = useState(() => {
@@ -85,6 +107,13 @@ export default function NouveauDevisPage() {
     fetch('/api/contacts?type=PROSPECT')
       .then((r) => r.json())
       .then((prospects: Contact[]) => setContacts((prev) => [...prev, ...prospects]));
+  }, []);
+
+  // Charger les chantiers
+  useEffect(() => {
+    fetch('/api/chantiers')
+      .then((r) => r.json())
+      .then((data: ChantierOption[]) => setChantiers(data));
   }, []);
 
   const selectedContact = contacts.find((c) => c.id === contactId);
@@ -136,6 +165,7 @@ export default function NouveauDevisPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contactId,
+          chantierId: chantierId || null,
           objet,
           dateValidite,
           conditions: conditions || null,
@@ -248,6 +278,22 @@ export default function NouveauDevisPage() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Chantier */}
+          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Chantier (optionnel)</h2>
+            <select
+              value={chantierId}
+              onChange={(e) => setChantierId(e.target.value)}
+              className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base
+                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Aucun chantier</option>
+              {chantiers.map((ch) => (
+                <option key={ch.id} value={ch.id}>{ch.nom}</option>
+              ))}
+            </select>
           </div>
 
           {/* Objet */}

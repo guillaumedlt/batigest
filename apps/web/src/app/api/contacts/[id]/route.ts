@@ -12,6 +12,26 @@ export async function GET(
 
   const contact = await prisma.contact.findFirst({
     where: { id, userId: TEMP_USER_ID, deletedAt: null },
+    include: {
+      devis: {
+        where: { deletedAt: null },
+        select: { id: true, numero: true, objet: true, statut: true, totalTTC: true, dateCreation: true },
+        orderBy: { dateCreation: 'desc' },
+        take: 10,
+      },
+      factures: {
+        where: { deletedAt: null },
+        select: { id: true, numero: true, type: true, statut: true, totalTTC: true, resteARegler: true, dateEmission: true },
+        orderBy: { dateEmission: 'desc' },
+        take: 10,
+      },
+      chantiers: {
+        where: { deletedAt: null },
+        select: { id: true, nom: true, statut: true, dateDebut: true },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      },
+    },
   });
 
   if (!contact) {

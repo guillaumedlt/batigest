@@ -48,6 +48,9 @@ export async function GET(request: NextRequest) {
 
     const frais = await prisma.noteFrais.findMany({
       where,
+      include: {
+        chantier: { select: { id: true, nom: true } },
+      },
       orderBy: { date: 'desc' },
     });
 

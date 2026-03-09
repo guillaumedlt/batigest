@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ArrowLeft, Save, Car } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 type ChantierOption = {
@@ -35,8 +35,17 @@ function estimerIndemniteKm(km: number): number {
   return Math.round(km * 0.405 * 100) / 100;
 }
 
-export default function NouvelleNoteFraisPage() {
+export default function NouvelleNoteFraisPageWrapper() {
+  return (
+    <Suspense fallback={<div className="animate-pulse"><div className="h-8 bg-gray-200 rounded w-1/3" /></div>}>
+      <NouvelleNoteFraisPage />
+    </Suspense>
+  );
+}
+
+function NouvelleNoteFraisPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [chantiers, setChantiers] = useState<ChantierOption[]>([]);
 
@@ -53,7 +62,7 @@ export default function NouvelleNoteFraisPage() {
     montant: '',
     tauxTVA: '',
     km: '',
-    chantierId: '',
+    chantierId: searchParams.get('chantierId') || '',
   });
 
   const isKm = form.categorie === 'KILOMETRIQUE';

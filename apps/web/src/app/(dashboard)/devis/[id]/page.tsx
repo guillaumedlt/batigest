@@ -45,6 +45,7 @@ type DevisDetail = {
     codePostal: string | null;
     ville: string | null;
   };
+  chantier: { id: string; nom: string } | null;
   lignes: DevisLigne[];
 };
 
@@ -241,6 +242,19 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               </div>
             </Link>
           </div>
+
+          {/* Chantier */}
+          {devis.chantier && (
+            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Chantier</h2>
+              <Link href={`/chantiers/${devis.chantier.id}`} className="flex items-center gap-2 group">
+                <MapPin size={16} className="text-gray-400" />
+                <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {devis.chantier.nom}
+                </span>
+              </Link>
+            </div>
+          )}
 
           {/* Lignes du devis */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
