@@ -19,7 +19,7 @@ function FormField({ name, label, placeholder, type = 'text', required = false }
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <input type={type} name={name} required={required} placeholder={placeholder}
-        className="w-full h-12 px-4 rounded-xl border border-gray-300 text-base
+        className="w-full h-12 px-4 rounded-xl border border-gray-200 text-base
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
     </div>
   );
@@ -146,7 +146,7 @@ export default function NouveauContactPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea name="notes" rows={3}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-base resize-none
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-base resize-none
                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Notes sur ce contact..." />
           </div>
@@ -155,7 +155,7 @@ export default function NouveauContactPage() {
         {/* Boutons — sticky en bas sur mobile, inline sur desktop */}
         <div className="sticky bottom-16 lg:static bg-gray-50 lg:bg-transparent pt-4 pb-2 lg:pb-0 flex gap-3">
           <Link href="/contacts"
-            className="hidden lg:flex items-center justify-center px-6 h-12 border border-gray-300 rounded-xl
+            className="hidden lg:flex items-center justify-center px-6 h-12 border border-gray-200 rounded-xl
                        text-gray-700 font-medium hover:bg-gray-50 transition-colors">
             Annuler
           </Link>

@@ -408,7 +408,7 @@ function LigneForm({
           <span className="text-sm font-semibold text-gray-900">{formatEuros(ht)}</span>
           {canRemove && (
             <button onClick={onRemove}
-              className="p-2 rounded-lg hover:bg-red-50 active:bg-red-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-red-50 active:bg-red-100 transition-colors"
               aria-label="Supprimer la ligne">
               <Trash2 size={16} className="text-red-400" />
             </button>
@@ -421,7 +421,7 @@ function LigneForm({
         value={ligne.designation}
         onChange={(e) => onUpdate(ligne.id, 'designation', e.target.value)}
         placeholder="Designation"
-        className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm
+        className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
 
@@ -430,7 +430,7 @@ function LigneForm({
         value={ligne.description}
         onChange={(e) => onUpdate(ligne.id, 'description', e.target.value)}
         placeholder="Description (optionnel)"
-        className="w-full h-10 px-3 rounded-lg border border-gray-100 text-sm text-gray-500
+        className="w-full h-10 px-3 rounded-xl border border-gray-100 text-sm text-gray-500
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
 
@@ -443,7 +443,7 @@ function LigneForm({
             min="0"
             value={ligne.quantite}
             onChange={(e) => onUpdate(ligne.id, 'quantite', e.target.value)}
-            className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm
+            className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -452,7 +452,7 @@ function LigneForm({
           <select
             value={ligne.unite}
             onChange={(e) => onUpdate(ligne.id, 'unite', e.target.value)}
-            className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm bg-white
+            className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm bg-white
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {UNITES.map((u) => <option key={u} value={u}>{u}</option>)}
@@ -467,7 +467,7 @@ function LigneForm({
             value={ligne.prixUnitaireHT}
             onChange={(e) => onUpdate(ligne.id, 'prixUnitaireHT', e.target.value)}
             placeholder="0.00"
-            className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm
+            className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -476,7 +476,7 @@ function LigneForm({
           <select
             value={ligne.tauxTVA}
             onChange={(e) => onUpdate(ligne.id, 'tauxTVA', e.target.value)}
-            className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm bg-white
+            className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm bg-white
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {TAUX_TVA.map((t) => <option key={t} value={t}>{t}%</option>)}

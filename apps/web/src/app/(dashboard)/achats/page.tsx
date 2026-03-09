@@ -13,6 +13,7 @@ type FicheAchat = {
   montantTTC: string;
   tauxTVA: string;
   chantierId: string | null;
+  chantier: { id: string; nom: string } | null;
   notes: string | null;
   fournisseur: {
     id: string;
@@ -97,7 +98,7 @@ export default function AchatsListPage() {
 
       {/* Stats rapides */}
       {achats.length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <p className="text-xs text-gray-500 uppercase tracking-wider">Total HT</p>
             <p className="text-xl font-bold text-gray-900 mt-1">{formatEuros(totalHT)}</p>
@@ -213,7 +214,7 @@ export default function AchatsListPage() {
                           {CATEGORIE_LABELS[achat.categorie]}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{achat.chantierId || '—'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">{achat.chantier?.nom || '—'}</td>
                       <td className="px-6 py-4 text-right">
                         <span className="font-semibold text-gray-900">{formatEuros(achat.montantTTC)}</span>
                       </td>

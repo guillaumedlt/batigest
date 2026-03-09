@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
       },
       include: {
         fournisseur: { select: { id: true, nom: true, prenom: true, entreprise: true } },
+        chantier: { select: { id: true, nom: true } },
       },
       orderBy: { date: 'desc' },
     });

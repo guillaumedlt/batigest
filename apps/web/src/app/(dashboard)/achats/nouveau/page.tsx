@@ -12,6 +12,12 @@ type ContactOption = {
   entreprise: string | null;
 };
 
+type ChantierOption = {
+  id: string;
+  nom: string;
+  statut: string;
+};
+
 const CATEGORIES = [
   { value: 'MATERIAUX', label: 'Materiaux' },
   { value: 'OUTILLAGE', label: 'Outillage' },
@@ -33,6 +39,7 @@ export default function NouvelAchatPage() {
   const [fournisseurs, setFournisseurs] = useState<ContactOption[]>([]);
   const [fournisseurSearch, setFournisseurSearch] = useState('');
   const [showFournisseurDropdown, setShowFournisseurDropdown] = useState(false);
+  const [chantiers, setChantiers] = useState<ChantierOption[]>([]);
 
   const [form, setForm] = useState({
     designation: '',
@@ -45,6 +52,12 @@ export default function NouvelAchatPage() {
     chantierId: '',
     notes: '',
   });
+
+  useEffect(() => {
+    fetch('/api/chantiers')
+      .then((r) => r.json())
+      .then((data) => setChantiers(data));
+  }, []);
 
   useEffect(() => {
     if (fournisseurSearch.length >= 2) {
@@ -123,7 +136,7 @@ export default function NouvelAchatPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
               <input
@@ -199,15 +212,18 @@ export default function NouvelAchatPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Reference chantier</label>
-            <input
-              type="text"
+            <label className="block text-sm font-medium text-gray-700 mb-1">Chantier</label>
+            <select
               value={form.chantierId}
               onChange={(e) => setForm({ ...form, chantierId: e.target.value })}
-              placeholder="Ex: Renovation Dupont"
               className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base
                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+            >
+              <option value="">Aucun chantier</option>
+              {chantiers.map((c) => (
+                <option key={c.id} value={c.id}>{c.nom}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -215,7 +231,7 @@ export default function NouvelAchatPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
           <h2 className="font-semibold text-gray-900">Montants</h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Montant HT *</label>
               <input

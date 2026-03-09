@@ -309,7 +309,7 @@ function NouvelleFacturePage() {
                       <span className="text-sm font-semibold text-gray-900">{formatEuros(calcLigneHT(ligne))}</span>
                       {lignes.length > 1 && (
                         <button onClick={() => removeLigne(ligne.id)}
-                          className="p-2 rounded-lg hover:bg-red-50" aria-label="Supprimer">
+                          className="p-2 rounded-xl hover:bg-red-50" aria-label="Supprimer">
                           <Trash2 size={16} className="text-red-400" />
                         </button>
                       )}
@@ -318,22 +318,22 @@ function NouvelleFacturePage() {
                   <input type="text" value={ligne.designation}
                     onChange={(e) => updateLigne(ligne.id, 'designation', e.target.value)}
                     placeholder="Designation"
-                    className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
+                    className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
                   <input type="text" value={ligne.description}
                     onChange={(e) => updateLigne(ligne.id, 'description', e.target.value)}
                     placeholder="Description (optionnel)"
-                    className="w-full h-10 px-3 rounded-lg border border-gray-100 text-sm text-gray-500 focus:ring-2 focus:ring-blue-500" />
+                    className="w-full h-10 px-3 rounded-xl border border-gray-100 text-sm text-gray-500 focus:ring-2 focus:ring-blue-500" />
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                     <div>
                       <label className="text-xs text-gray-400 mb-1 block">Quantite</label>
                       <input type="number" step="0.001" min="0" value={ligne.quantite}
                         onChange={(e) => updateLigne(ligne.id, 'quantite', e.target.value)}
-                        className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
+                        className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                       <label className="text-xs text-gray-400 mb-1 block">Unite</label>
                       <select value={ligne.unite} onChange={(e) => updateLigne(ligne.id, 'unite', e.target.value)}
-                        className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-blue-500">
+                        className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-blue-500">
                         {UNITES.map((u) => <option key={u} value={u}>{u}</option>)}
                       </select>
                     </div>
@@ -342,12 +342,12 @@ function NouvelleFacturePage() {
                       <input type="number" step="0.01" min="0" value={ligne.prixUnitaireHT}
                         onChange={(e) => updateLigne(ligne.id, 'prixUnitaireHT', e.target.value)}
                         placeholder="0.00"
-                        className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
+                        className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                       <label className="text-xs text-gray-400 mb-1 block">TVA</label>
                       <select value={ligne.tauxTVA} onChange={(e) => updateLigne(ligne.id, 'tauxTVA', e.target.value)}
-                        className="w-full h-11 px-3 rounded-lg border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-blue-500">
+                        className="w-full h-11 px-3 rounded-xl border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-blue-500">
                         {TAUX_TVA.map((t) => <option key={t} value={t}>{t}%</option>)}
                       </select>
                     </div>
