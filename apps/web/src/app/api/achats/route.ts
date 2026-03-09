@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
               OR: [
                 { designation: { contains: search, mode: 'insensitive' } },
                 { notes: { contains: search, mode: 'insensitive' } },
-                { chantierId: { contains: search, mode: 'insensitive' } },
               ],
             }
           : {}),
