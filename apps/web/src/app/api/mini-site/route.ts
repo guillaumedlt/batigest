@@ -63,6 +63,12 @@ export async function POST(request: NextRequest) {
         zoneIntervention: body.zoneIntervention || null,
         theme: body.theme || 'BLEU',
         certifications: body.certifications || [],
+        competences: body.competences || [],
+        prestations: body.prestations || [],
+        anneesExperience: body.anneesExperience || null,
+        slogan: body.slogan || null,
+        horaires: body.horaires || null,
+        siteWeb: body.siteWeb || null,
         actif: true,
       },
       include: {
@@ -106,6 +112,7 @@ export async function PATCH(request: NextRequest) {
     const fields = [
       'slug', 'nomEntreprise', 'metier', 'description', 'telephone', 'email',
       'adresse', 'zoneIntervention', 'logoUrl', 'theme', 'certifications', 'actif',
+      'competences', 'prestations', 'anneesExperience', 'slogan', 'horaires', 'siteWeb',
     ];
     for (const f of fields) {
       if (body[f] !== undefined) data[f] = body[f];

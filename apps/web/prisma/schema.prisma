@@ -382,6 +382,12 @@ model MiniSite {
   logoUrl           String?
   theme             MiniSiteTheme @default(BLEU)
   certifications    String[]      @default([])
+  competences       String[]      @default([]) // Electricite, Plomberie, Peinture...
+  prestations       String[]      @default([]) // Renovation complete, Mise aux normes...
+  anneesExperience  Int?
+  slogan            String?       // "Votre electricien de confiance depuis 2010"
+  horaires          String?       // "Lun-Ven 8h-18h"
+  siteWeb           String?       // Lien externe si existant
   actif             Boolean       @default(false)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
