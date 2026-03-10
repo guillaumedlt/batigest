@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { PwaRegister } from '@/components/pwa-register';
 import './globals.css';
 
 const inter = Inter({
@@ -33,7 +34,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased bg-gray-50 text-gray-900`}>
+        <PwaRegister />
         {children}
       </body>
     </html>

@@ -94,6 +94,18 @@ function getDocuments(entreprise: Entreprise | null): DocumentCard[] {
       href: '/documents/pv-reception',
     },
 
+    // Fiscal - FEC
+    {
+      id: 'fec',
+      title: 'Export FEC',
+      description: 'Fichier des Ecritures Comptables obligatoire en cas de controle fiscal',
+      category: 'fiscal',
+      icon: Receipt,
+      iconColor: 'text-cyan-600',
+      iconBg: 'bg-cyan-50',
+      href: '/documents/fec',
+    },
+
     // Administratif
     {
       id: 'cgv',
@@ -114,6 +126,16 @@ function getDocuments(entreprise: Entreprise | null): DocumentCard[] {
       iconColor: 'text-red-600',
       iconBg: 'bg-red-50',
       href: '/documents/cgv?section=assurance',
+    },
+    {
+      id: 'facturx',
+      title: 'Factur-X',
+      description: 'Format de facturation electronique obligatoire — telechargeable par facture',
+      category: 'admin',
+      icon: FileText,
+      iconColor: 'text-purple-600',
+      iconBg: 'bg-purple-50',
+      href: '/factures',
     },
   ];
 

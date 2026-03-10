@@ -2,10 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import bcrypt from 'bcryptjs';
 import { signToken, COOKIE_NAME } from '@/lib/auth/jwt';
+import { checkRateLimit } from '@/lib/auth/rate-limit';
 
 // POST /api/auth/login — Se connecter
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting par IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const rateCheck = checkRateLimit(ip);
+    if (!rateCheck.allowed) {
+      const res = NextResponse.json(
+        { error: 'Trop de tentatives de connexion. Veuillez reessayer dans quelques minutes.' },
+        { status: 429 },
+      );
+      res.headers.set('Retry-After', String(rateCheck.retryAfter));
+      return res;
+    }
+
     const body = await request.json();
     const { email, password } = body;
 

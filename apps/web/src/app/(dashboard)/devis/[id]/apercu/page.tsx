@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Download, Printer } from 'lucide-react';
+import { ArrowLeft, Download, Printer, FileDown } from 'lucide-react';
 import Link from 'next/link';
 
 type DevisLigne = {
@@ -114,10 +114,14 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
           <ArrowLeft size={18} /> Retour au devis
         </Link>
         <div className="flex gap-2">
+          <button onClick={() => window.open(`/api/devis/${id}/pdf`, '_blank')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">
+            <FileDown size={16} /> Telecharger PDF
+          </button>
           <button onClick={() => window.print()}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
             style={{ backgroundColor: accentColor }}>
-            <Printer size={16} /> Imprimer / PDF
+            <Printer size={16} /> Imprimer
           </button>
         </div>
       </div>

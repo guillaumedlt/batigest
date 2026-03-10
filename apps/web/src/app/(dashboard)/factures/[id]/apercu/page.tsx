@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer, FileDown } from 'lucide-react';
 import Link from 'next/link';
 
 type FactureLigne = {
@@ -120,11 +120,17 @@ export default function FactureApercuPage({ params }: { params: Promise<{ id: st
         <Link href={`/factures/${id}`} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
           <ArrowLeft size={18} /> Retour
         </Link>
-        <button onClick={() => window.print()}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
-          style={{ backgroundColor: accentColor }}>
-          <Printer size={16} /> Imprimer / PDF
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => window.open(`/api/factures/${id}/pdf`, '_blank')}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">
+            <FileDown size={16} /> Telecharger PDF
+          </button>
+          <button onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
+            style={{ backgroundColor: accentColor }}>
+            <Printer size={16} /> Imprimer
+          </button>
+        </div>
       </div>
 
       {/* Document */}

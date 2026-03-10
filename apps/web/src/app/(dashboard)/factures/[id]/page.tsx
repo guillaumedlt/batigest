@@ -446,6 +446,16 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
                 <span className="font-medium text-gray-700">Aperçu / PDF</span>
               </button>
 
+              {/* Factur-X XML */}
+              {facture.statut !== 'BROUILLON' && (
+                <a href={`/api/factures/${id}/facturx`} download
+                  className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-purple-50
+                             active:bg-purple-100 transition-colors min-h-[48px]">
+                  <FileText size={20} className="text-purple-500" />
+                  <span className="font-medium text-purple-700">Factur-X (XML)</span>
+                </a>
+              )}
+
               {facture.statut !== 'ANNULEE' && facture.statut !== 'BROUILLON' && (
                 <button onClick={() => updateStatut('ANNULEE')} disabled={updating}
                   className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-50
