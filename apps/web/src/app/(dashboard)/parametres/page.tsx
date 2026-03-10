@@ -24,6 +24,7 @@ type Entreprise = {
   conditionsReglement: string | null;
   mentionsDevis: string | null;
   mentionsFacture: string | null;
+  rib: string | null;
 };
 
 const FORMES_JURIDIQUES = [
@@ -338,6 +339,27 @@ export default function ParametresPage() {
             onChange={(e) => updateField('assuranceZone', e.target.value)}
             placeholder="Ex: France metropolitaine"
             className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Coordonnees bancaires */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <FileText size={20} className="text-blue-600" />
+          <h2 className="font-semibold text-gray-900">Coordonnees bancaires</h2>
+        </div>
+        <p className="text-sm text-gray-500">Votre IBAN apparaitra en bas de vos factures pour faciliter le paiement.</p>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
+          <input
+            type="text"
+            value={entreprise.rib || ''}
+            onChange={(e) => updateField('rib', e.target.value)}
+            placeholder="FR76 1234 5678 9012 3456 7890 123"
+            className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base font-mono
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>

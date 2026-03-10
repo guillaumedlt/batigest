@@ -66,6 +66,7 @@ export async function PATCH(request: NextRequest) {
         ...(body.conditionsReglement !== undefined ? { conditionsReglement: body.conditionsReglement } : {}),
         ...(body.mentionsDevis !== undefined ? { mentionsDevis: body.mentionsDevis } : {}),
         ...(body.mentionsFacture !== undefined ? { mentionsFacture: body.mentionsFacture } : {}),
+        ...(body.rib !== undefined ? { rib: body.rib } : {}),
       },
     });
 
