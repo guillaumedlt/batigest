@@ -9,7 +9,8 @@
         "^build"
       ],
       "env": [
-        "DATABASE_URL"
+        "DATABASE_URL",
+        "JWT_SECRET"
       ],
       "outputs": [
         ".next/**",
