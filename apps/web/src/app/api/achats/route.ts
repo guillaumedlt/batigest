@@ -10,12 +10,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const categorie = searchParams.get('categorie') || undefined;
+    const year = searchParams.get('year');
 
     const achats = await prisma.ficheAchat.findMany({
       where: {
         userId: TEMP_USER_ID,
         deletedAt: null,
         ...(categorie ? { categorie: categorie as 'MATERIAUX' | 'OUTILLAGE' | 'LOCATION' | 'SOUS_TRAITANCE' | 'AUTRE' } : {}),
+        ...(year ? { date: { gte: new Date(Number(year), 0, 1), lte: new Date(Number(year), 11, 31, 23, 59, 59) } } : {}),
         ...(search
           ? {
               OR: [

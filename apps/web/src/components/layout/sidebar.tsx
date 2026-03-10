@@ -8,7 +8,7 @@ import {
   FileText,
   Receipt,
   ShoppingCart,
-  Calculator,
+  FolderOpen,
   Calendar,
   Wallet,
   Globe,
@@ -28,7 +28,7 @@ const mainNav = [
 const secondaryNav = [
   { href: '/achats', label: 'Achats', icon: ShoppingCart },
   { href: '/prestations', label: 'Prestations', icon: Library },
-  { href: '/tva', label: 'TVA', icon: Calculator },
+  { href: '/documents', label: 'Documents', icon: FolderOpen },
   { href: '/calendrier', label: 'Calendrier', icon: Calendar },
   { href: '/frais', label: 'Notes de frais', icon: Wallet },
   { href: '/mini-site', label: 'Mini-site', icon: Globe },

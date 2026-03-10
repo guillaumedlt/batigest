@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('search') || '';
   const statut = searchParams.get('statut') || undefined;
   const type = searchParams.get('type') || undefined;
+  const year = searchParams.get('year');
 
   const factures = await prisma.facture.findMany({
     where: {
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
       deletedAt: null,
       ...(statut ? { statut: statut as 'BROUILLON' | 'EMISE' | 'PAYEE_PARTIELLEMENT' | 'PAYEE' | 'ANNULEE' } : {}),
       ...(type ? { type: type as 'CLASSIQUE' | 'ACOMPTE' | 'SITUATION' | 'AVOIR' } : {}),
+      ...(year ? { dateEmission: { gte: new Date(Number(year), 0, 1), lte: new Date(Number(year), 11, 31, 23, 59, 59) } } : {}),
       ...(search
         ? {
             OR: [

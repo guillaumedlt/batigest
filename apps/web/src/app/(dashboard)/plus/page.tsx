@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   ShoppingCart,
   Library,
-  Calculator,
+  FolderOpen,
   Calendar,
   Wallet,
   Globe,
@@ -20,7 +20,7 @@ const items = [
   { href: '/prestations', label: 'Prestations', desc: 'Bibliotheque de prestations', icon: Library },
   { href: '/frais', label: 'Notes de frais', desc: 'Carburant, peages, repas', icon: Wallet },
   { href: '/calendrier', label: 'Calendrier', desc: 'Rendez-vous et evenements', icon: Calendar },
-  { href: '/tva', label: 'TVA', desc: 'Declarations et suivi TVA', icon: Calculator },
+  { href: '/documents', label: 'Documents', desc: 'TVA, attestations, CGV, URSSAF...', icon: FolderOpen },
   { href: '/mini-site', label: 'Mini-site', desc: 'Votre vitrine en ligne', icon: Globe },
   { href: '/parametres', label: 'Parametres', desc: 'Entreprise, mentions legales', icon: Settings },
 ];
