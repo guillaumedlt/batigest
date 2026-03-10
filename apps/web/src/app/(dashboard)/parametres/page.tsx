@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Save, Building2, FileText, Shield, Hash } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Save, Building2, FileText, Shield, Hash, Palette, Upload, X } from 'lucide-react';
 
 type Entreprise = {
   id: string;
@@ -25,6 +25,9 @@ type Entreprise = {
   mentionsDevis: string | null;
   mentionsFacture: string | null;
   rib: string | null;
+  logoUrl: string | null;
+  docCouleur: string;
+  docPolice: string;
   prefixDevis: string;
   prefixFacture: string;
   prefixAvoir: string;
@@ -61,11 +64,32 @@ const REGIMES_TVA = [
   },
 ];
 
+const COULEURS_PRESETS = [
+  { value: '#2563EB', label: 'Bleu' },
+  { value: '#059669', label: 'Vert' },
+  { value: '#DC2626', label: 'Rouge' },
+  { value: '#D97706', label: 'Orange' },
+  { value: '#7C3AED', label: 'Violet' },
+  { value: '#0891B2', label: 'Cyan' },
+  { value: '#4B5563', label: 'Gris' },
+  { value: '#000000', label: 'Noir' },
+];
+
+const POLICES = [
+  { value: 'Inter', label: 'Inter (moderne)' },
+  { value: 'Arial, sans-serif', label: 'Arial (classique)' },
+  { value: 'Georgia, serif', label: 'Georgia (elegant)' },
+  { value: 'Courier New, monospace', label: 'Courier (technique)' },
+  { value: 'Verdana, sans-serif', label: 'Verdana (lisible)' },
+  { value: 'Trebuchet MS, sans-serif', label: 'Trebuchet (dynamique)' },
+];
+
 export default function ParametresPage() {
   const [entreprise, setEntreprise] = useState<Entreprise | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch('/api/entreprise')
@@ -108,6 +132,20 @@ export default function ParametresPage() {
       return;
     }
     setEntreprise({ ...entreprise, [field]: value });
+  }
+
+  function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !entreprise) return;
+    if (file.size > 500_000) {
+      alert('Le logo ne doit pas depasser 500 Ko.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setEntreprise({ ...entreprise, logoUrl: reader.result as string });
+    };
+    reader.readAsDataURL(file);
   }
 
   if (loading) {
@@ -481,6 +519,146 @@ export default function ParametresPage() {
           <p className="text-xs text-gray-400">
             Apercu : <span className="font-mono font-medium text-gray-600">{entreprise.prefixAvoir || 'A'}-{new Date().getFullYear()}-{String((entreprise.sequenceAvoir ?? 0) + 1).padStart(3, '0')}</span>
           </p>
+        </div>
+      </div>
+
+      {/* Apparence des documents */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Palette size={20} className="text-blue-600" />
+          <h2 className="font-semibold text-gray-900">Apparence des documents</h2>
+        </div>
+        <p className="text-sm text-gray-500">
+          Personnalisez le look de vos devis et factures avec votre logo, vos couleurs et votre police.
+        </p>
+
+        {/* Logo */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Logo de l&apos;entreprise</label>
+          <div className="flex items-center gap-4">
+            {entreprise.logoUrl ? (
+              <div className="relative">
+                <img
+                  src={entreprise.logoUrl}
+                  alt="Logo"
+                  className="h-16 w-auto max-w-[200px] object-contain rounded-lg border border-gray-200"
+                />
+                <button
+                  onClick={() => setEntreprise({ ...entreprise, logoUrl: null })}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => logoInputRef.current?.click()}
+                className="h-16 w-40 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center
+                           cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+              >
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Upload size={16} />
+                  <span>Ajouter un logo</span>
+                </div>
+              </div>
+            )}
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml,image/webp"
+              onChange={handleLogoUpload}
+              className="hidden"
+            />
+            {entreprise.logoUrl && (
+              <button
+                onClick={() => logoInputRef.current?.click()}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Changer
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 mt-1">PNG, JPG ou SVG. 500 Ko max.</p>
+        </div>
+
+        {/* Couleur accent */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Couleur principale</label>
+          <div className="flex flex-wrap gap-2">
+            {COULEURS_PRESETS.map((c) => (
+              <button
+                key={c.value}
+                onClick={() => updateField('docCouleur', c.value)}
+                className={`w-10 h-10 rounded-xl border-2 transition-all ${
+                  (entreprise.docCouleur || '#2563EB') === c.value
+                    ? 'border-gray-900 scale-110 shadow-md'
+                    : 'border-transparent hover:scale-105'
+                }`}
+                style={{ backgroundColor: c.value }}
+                title={c.label}
+              />
+            ))}
+            <div className="relative">
+              <input
+                type="color"
+                value={entreprise.docCouleur || '#2563EB'}
+                onChange={(e) => updateField('docCouleur', e.target.value)}
+                className="w-10 h-10 rounded-xl cursor-pointer border-2 border-gray-200"
+                title="Couleur personnalisee"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Police */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Police des documents</label>
+          <select
+            value={entreprise.docPolice || 'Inter'}
+            onChange={(e) => updateField('docPolice', e.target.value)}
+            className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {POLICES.map((p) => (
+              <option key={p.value} value={p.value} style={{ fontFamily: p.value }}>{p.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Mini apercu */}
+        <div>
+          <p className="text-sm font-medium text-gray-700 mb-2">Apercu</p>
+          <div className="border border-gray-200 rounded-xl p-4 bg-white" style={{ fontFamily: entreprise.docPolice || 'Inter' }}>
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                {entreprise.logoUrl && (
+                  <img src={entreprise.logoUrl} alt="" className="h-10 w-auto max-w-[80px] object-contain" />
+                )}
+                <div>
+                  <p className="font-bold text-sm text-gray-900">{entreprise.nomEntreprise}</p>
+                  <p className="text-xs text-gray-400">{entreprise.adresse}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-sm" style={{ color: entreprise.docCouleur || '#2563EB' }}>FACTURE</p>
+                <p className="text-xs text-gray-500">{entreprise.prefixFacture || 'F'}-2026-001</p>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-400">Designation</span>
+                <span className="text-gray-400">Total HT</span>
+              </div>
+              <div className="flex justify-between text-xs mt-1">
+                <span className="text-gray-600">Exemple de prestation</span>
+                <span className="text-gray-600">1 500,00 EUR</span>
+              </div>
+              <div className="flex justify-between mt-2 pt-2 border-t text-sm font-bold">
+                <span>Total TTC</span>
+                <span style={{ color: entreprise.docCouleur || '#2563EB' }}>1 800,00 EUR</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

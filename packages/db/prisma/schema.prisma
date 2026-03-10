@@ -53,6 +53,9 @@ model Entreprise {
   conditionsReglement   String? // Conditions par defaut
   mentionsDevis         String? // Mentions additionnelles devis
   mentionsFacture       String? // Mentions additionnelles factures
+  rib                   String? // IBAN pour documents
+  docCouleur            String  @default("#2563EB") // Couleur accent documents
+  docPolice             String  @default("Inter") // Police documents
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

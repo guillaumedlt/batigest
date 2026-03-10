@@ -53,6 +53,9 @@ type Entreprise = {
   assuranceDecennale: string | null;
   assuranceNumero: string | null;
   rib: string | null;
+  logoUrl: string | null;
+  docCouleur: string;
+  docPolice: string;
   franchiseTVA: boolean;
   mentionsDevis: string | null;
   conditionsReglement: string | null;
@@ -91,6 +94,8 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
   const contact = devis.contact;
   const contactName = contact.entreprise || `${contact.nom} ${contact.prenom || ''}`.trim();
   const contactAddr = [contact.adresse, contact.codePostal, contact.ville].filter(Boolean).join(', ');
+  const accentColor = entreprise.docCouleur || '#2563EB';
+  const fontFamily = entreprise.docPolice || 'Inter';
 
   // TVA par taux
   const tvaDetails: Record<string, { base: number; tva: number }> = {};
@@ -110,18 +115,24 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
         </Link>
         <div className="flex gap-2">
           <button onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 rounded-xl text-sm font-medium text-white hover:bg-blue-700">
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
+            style={{ backgroundColor: accentColor }}>
             <Printer size={16} /> Imprimer / PDF
           </button>
         </div>
       </div>
 
       {/* Document */}
-      <div className="bg-white shadow-lg rounded-2xl print:rounded-none print:shadow-none p-4 sm:p-8 lg:p-12 print:p-0">
+      <div className="bg-white shadow-lg rounded-2xl print:rounded-none print:shadow-none p-4 sm:p-8 lg:p-12 print:p-0" style={{ fontFamily }}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0 mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{entreprise.nomEntreprise}</h1>
+            <div className="flex items-center gap-3 mb-1">
+              {entreprise.logoUrl && (
+                <img src={entreprise.logoUrl} alt="" className="h-12 w-auto max-w-[120px] object-contain" />
+              )}
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{entreprise.nomEntreprise}</h1>
+            </div>
             <p className="text-sm text-gray-500 mt-1">{entreprise.adresse}</p>
             <p className="text-sm text-gray-500">{entreprise.codePostal} {entreprise.ville}</p>
             <p className="text-sm text-gray-500">Tél : {entreprise.telephone}</p>
@@ -130,7 +141,7 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
             {entreprise.tvaIntracom && <p className="text-xs text-gray-400">TVA : {entreprise.tvaIntracom}</p>}
           </div>
           <div className="sm:text-right">
-            <h2 className="text-xl font-bold text-blue-600">DEVIS</h2>
+            <h2 className="text-xl font-bold" style={{ color: accentColor }}>DEVIS</h2>
             <p className="text-lg font-semibold text-gray-900 mt-1">{devis.numero}</p>
             <p className="text-sm text-gray-500 mt-2">Date : {fmtDate(devis.dateCreation)}</p>
             <p className="text-sm text-gray-500">Validité : {fmtDate(devis.dateValidite)}</p>
@@ -156,7 +167,7 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
         <div className="overflow-x-auto -mx-4 sm:mx-0">
         <table className="w-full mb-6 text-sm min-w-[500px]">
           <thead>
-            <tr className="border-b-2 border-gray-200">
+            <tr style={{ borderBottom: `2px solid ${accentColor}20` }}>
               <th className="text-left py-2 font-semibold text-gray-700">Désignation</th>
               <th className="text-right py-2 font-semibold text-gray-700 w-16">Qté</th>
               <th className="text-left py-2 font-semibold text-gray-700 w-14 pl-2">Unité</th>
@@ -204,7 +215,7 @@ export default function DevisApercuPage({ params }: { params: Promise<{ id: stri
             )}
             <div className="flex justify-between pt-2 border-t-2 border-gray-200">
               <span className="font-bold text-gray-900">Total TTC</span>
-              <span className="text-xl font-bold text-blue-600">{fmt(devis.totalTTC)}</span>
+              <span className="text-xl font-bold" style={{ color: accentColor }}>{fmt(devis.totalTTC)}</span>
             </div>
           </div>
         </div>
