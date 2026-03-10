@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/entreprise — Infos entreprise
 export async function GET() {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const entreprise = await prisma.entreprise.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
     });
 
     if (!entreprise) {
@@ -24,10 +28,15 @@ export async function GET() {
 // PATCH /api/entreprise — Modifier les infos entreprise
 export async function PATCH(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const entreprise = await prisma.entreprise.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
     });
 
     if (!entreprise) {

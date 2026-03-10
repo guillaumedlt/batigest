@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/factures/:id — Detail d'une facture
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { id } = await params;
 
   const facture = await prisma.facture.findFirst({
-    where: { id, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id, userId: userId, deletedAt: null },
     include: {
       contact: true,
       chantier: { select: { id: true, nom: true } },
@@ -38,11 +42,16 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = await request.json();
 
   const existing = await prisma.facture.findFirst({
-    where: { id, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id, userId: userId, deletedAt: null },
   });
 
   if (!existing) {
@@ -158,10 +167,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { id } = await params;
 
   const existing = await prisma.facture.findFirst({
-    where: { id, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id, userId: userId, deletedAt: null },
   });
 
   if (!existing) {

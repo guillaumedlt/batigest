@@ -1,24 +1,28 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/dashboard/stats
 export async function GET() {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const now = new Date();
     const debutMois = new Date(now.getFullYear(), now.getMonth(), 1);
     const finMois = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
     // Devis en attente (ENVOYE)
     const devisEnAttente = await prisma.devis.count({
-      where: { userId: TEMP_USER_ID, deletedAt: null, statut: 'ENVOYE' },
+      where: { userId: userId, deletedAt: null, statut: 'ENVOYE' },
     });
 
     // Factures impayees (EMISE ou PAYEE_PARTIELLEMENT)
     const facturesImpayees = await prisma.facture.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         statut: { in: ['EMISE', 'PAYEE_PARTIELLEMENT'] },
       },
@@ -31,7 +35,7 @@ export async function GET() {
     // CA du mois (factures emises ce mois, hors annulees et brouillons)
     const facturesMois = await prisma.facture.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         statut: { notIn: ['BROUILLON', 'ANNULEE'] },
         dateEmission: { gte: debutMois, lte: finMois },
@@ -46,7 +50,7 @@ export async function GET() {
     const encaissementsMois = await prisma.paiement.aggregate({
       where: {
         date: { gte: debutMois, lte: finMois },
-        facture: { userId: TEMP_USER_ID, deletedAt: null },
+        facture: { userId: userId, deletedAt: null },
       },
       _sum: { montant: true },
     });
@@ -55,7 +59,7 @@ export async function GET() {
     // Depenses du mois (achats + frais)
     const achatsMois = await prisma.ficheAchat.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         date: { gte: debutMois, lte: finMois },
       },
@@ -63,7 +67,7 @@ export async function GET() {
     });
     const fraisMois = await prisma.noteFrais.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         date: { gte: debutMois, lte: finMois },
       },
@@ -80,7 +84,7 @@ export async function GET() {
 
       const facAgg = await prisma.facture.aggregate({
         where: {
-          userId: TEMP_USER_ID,
+          userId: userId,
           deletedAt: null,
           statut: { notIn: ['BROUILLON', 'ANNULEE'] },
           dateEmission: { gte: d, lte: f },
@@ -89,11 +93,11 @@ export async function GET() {
       });
 
       const achAgg = await prisma.ficheAchat.aggregate({
-        where: { userId: TEMP_USER_ID, deletedAt: null, date: { gte: d, lte: f } },
+        where: { userId: userId, deletedAt: null, date: { gte: d, lte: f } },
         _sum: { montantTTC: true },
       });
       const frAgg = await prisma.noteFrais.aggregate({
-        where: { userId: TEMP_USER_ID, deletedAt: null, date: { gte: d, lte: f } },
+        where: { userId: userId, deletedAt: null, date: { gte: d, lte: f } },
         _sum: { montant: true },
       });
 
@@ -106,7 +110,7 @@ export async function GET() {
 
     // Chantiers en cours
     const chantiersEnCours = await prisma.chantier.findMany({
-      where: { userId: TEMP_USER_ID, deletedAt: null, statut: 'EN_COURS' },
+      where: { userId: userId, deletedAt: null, statut: 'EN_COURS' },
       select: { id: true, nom: true, ville: true },
       orderBy: { updatedAt: 'desc' },
       take: 5,
@@ -117,7 +121,7 @@ export async function GET() {
     const finDemain = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
     const evenements = await prisma.evenement.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         dateDebut: { gte: debutJour, lt: finDemain },
       },
@@ -129,13 +133,13 @@ export async function GET() {
     // Activite recente
     const [dernDevis, dernFactures] = await Promise.all([
       prisma.devis.findMany({
-        where: { userId: TEMP_USER_ID, deletedAt: null },
+        where: { userId: userId, deletedAt: null },
         select: { id: true, numero: true, objet: true, statut: true, totalTTC: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
         take: 5,
       }),
       prisma.facture.findMany({
-        where: { userId: TEMP_USER_ID, deletedAt: null },
+        where: { userId: userId, deletedAt: null },
         select: { id: true, numero: true, type: true, statut: true, totalTTC: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
         take: 5,

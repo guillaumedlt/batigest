@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/factures — Liste des factures
 export async function GET(request: NextRequest) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search') || '';
   const statut = searchParams.get('statut') || undefined;
@@ -14,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   const factures = await prisma.facture.findMany({
     where: {
-      userId: TEMP_USER_ID,
+      userId: userId,
       deletedAt: null,
       ...(statut ? { statut: statut as 'BROUILLON' | 'EMISE' | 'PAYEE_PARTIELLEMENT' | 'PAYEE' | 'ANNULEE' } : {}),
       ...(type ? { type: type as 'CLASSIQUE' | 'ACOMPTE' | 'SITUATION' | 'AVOIR' } : {}),
@@ -49,6 +53,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/factures — Creer une facture
 export async function POST(request: NextRequest) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const body = await request.json();
 
   if (!body.contactId) {
@@ -60,7 +69,7 @@ export async function POST(request: NextRequest) {
 
   // Verifier le contact
   const contact = await prisma.contact.findFirst({
-    where: { id: body.contactId, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id: body.contactId, userId: userId, deletedAt: null },
   });
   if (!contact) {
     return NextResponse.json({ error: 'Contact non trouve.' }, { status: 404 });
@@ -68,7 +77,7 @@ export async function POST(request: NextRequest) {
 
   // Generer le numero sequentiel
   const entreprise = await prisma.entreprise.findFirst({
-    where: { userId: TEMP_USER_ID },
+    where: { userId: userId },
   });
 
   const year = new Date().getFullYear();
@@ -92,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
   } else {
     const count = await prisma.facture.count({
-      where: { userId: TEMP_USER_ID, type: factureType === 'AVOIR' ? 'AVOIR' : { not: 'AVOIR' } },
+      where: { userId: userId, type: factureType === 'AVOIR' ? 'AVOIR' : { not: 'AVOIR' } },
     });
     sequenceNum = count + 1;
   }
@@ -149,7 +158,7 @@ export async function POST(request: NextRequest) {
 
   const facture = await prisma.facture.create({
     data: {
-      userId: TEMP_USER_ID,
+      userId: userId,
       contactId: body.contactId,
       devisId: body.devisId || null,
       chantierId: body.chantierId || null,

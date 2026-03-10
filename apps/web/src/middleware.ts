@@ -1,68 +1,52 @@
-import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'batigest-dev-secret-change-in-production-2026'
+);
+const COOKIE_NAME = 'batigest-session';
+
+// Routes publiques (pas besoin d'auth)
+const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/site'];
 
 export async function middleware(request: NextRequest) {
-  // Skip auth si Supabase pas configure
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return NextResponse.next();
+  const { pathname } = request.nextUrl;
+
+  // Routes publiques
+  const isPublic = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
+
+  // Verifier le JWT
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  let isAuthenticated = false;
+
+  if (token) {
+    try {
+      await jwtVerify(token, JWT_SECRET);
+      isAuthenticated = true;
+    } catch {
+      // Token invalide ou expire
+    }
   }
 
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Routes publiques (pas besoin d'auth)
-  const publicRoutes = ['/login', '/signup', '/forgot-password'];
-  const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route),
-  );
-
-  // Rediriger vers login si pas connecte
-  if (!user && !isPublicRoute) {
+  // Rediriger vers login si pas connecte et route protegee
+  if (!isAuthenticated && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
-  // Rediriger vers dashboard si deja connecte et sur une page publique
-  if (user && isPublicRoute) {
+  // Rediriger vers dashboard si connecte et sur login/signup
+  if (isAuthenticated && (pathname === '/login' || pathname === '/signup')) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|manifest\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

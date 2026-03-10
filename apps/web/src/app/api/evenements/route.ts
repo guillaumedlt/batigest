@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/evenements — Liste des evenements (par plage de dates)
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const debut = searchParams.get('debut');
     const fin = searchParams.get('fin');
     const type = searchParams.get('type') || undefined;
 
     const where: Record<string, unknown> = {
-      userId: TEMP_USER_ID,
+      userId: userId,
       deletedAt: null,
     };
 
@@ -45,6 +49,11 @@ export async function GET(request: NextRequest) {
 // POST /api/evenements — Creer un evenement
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.titre || !body.dateDebut || !body.type) {
@@ -76,7 +85,7 @@ export async function POST(request: NextRequest) {
     // Verifier que le contact existe si fourni
     if (body.contactId) {
       const contact = await prisma.contact.findFirst({
-        where: { id: body.contactId, userId: TEMP_USER_ID, deletedAt: null },
+        where: { id: body.contactId, userId: userId, deletedAt: null },
       });
       if (!contact) {
         return NextResponse.json({ error: 'Contact non trouve.' }, { status: 404 });
@@ -85,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     const evenement = await prisma.evenement.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         titre: body.titre,
         type: body.type,
         dateDebut,

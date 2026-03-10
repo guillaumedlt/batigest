@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/chantiers?search=...&statut=...
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const statut = searchParams.get('statut') || '';
 
     const where: Record<string, unknown> = {
-      userId: TEMP_USER_ID,
+      userId: userId,
       deletedAt: null,
     };
 
@@ -73,6 +77,11 @@ export async function GET(request: NextRequest) {
 // POST /api/chantiers
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { nom, clientId, adresse, codePostal, ville, statut, dateDebut, dateFin, description, notes, budgetPrevu } = body;
 
@@ -82,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     const chantier = await prisma.chantier.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         nom,
         clientId: clientId || null,
         adresse: adresse || null,

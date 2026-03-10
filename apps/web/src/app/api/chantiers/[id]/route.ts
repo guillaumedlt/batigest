@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/chantiers/[id]
 export async function GET(
@@ -9,9 +8,14 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { id } = await params;
     const chantier = await prisma.chantier.findFirst({
-      where: { id, userId: TEMP_USER_ID, deletedAt: null },
+      where: { id, userId: userId, deletedAt: null },
       include: {
         client: { select: { id: true, nom: true, prenom: true, entreprise: true, telephone: true, email: true } },
         devis: {
@@ -78,6 +82,11 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
 
@@ -117,6 +126,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { id } = await params;
     await prisma.chantier.update({
       where: { id },

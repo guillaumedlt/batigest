@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/mini-site — Config du mini-site
 export async function GET() {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const site = await prisma.miniSite.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
       include: {
         photos: { orderBy: { ordre: 'asc' } },
         avis: { where: { valide: true }, orderBy: { date: 'desc' } },
@@ -24,6 +28,11 @@ export async function GET() {
 // POST /api/mini-site — Creer le mini-site
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.slug || !body.nomEntreprise || !body.metier || !body.telephone || !body.email) {
@@ -44,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Verifier qu'il n'en a pas deja un
     const existingUser = await prisma.miniSite.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
     });
     if (existingUser) {
       return NextResponse.json({ error: 'Vous avez deja un mini-site. Utilisez PATCH pour le modifier.' }, { status: 409 });
@@ -52,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const site = await prisma.miniSite.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         slug: slugClean,
         nomEntreprise: body.nomEntreprise,
         metier: body.metier,
@@ -87,10 +96,15 @@ export async function POST(request: NextRequest) {
 // PATCH /api/mini-site — Modifier le mini-site
 export async function PATCH(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const site = await prisma.miniSite.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
     });
     if (!site) {
       return NextResponse.json({ error: 'Mini-site non trouve.' }, { status: 404 });

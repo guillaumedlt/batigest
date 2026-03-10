@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/tva?periode=2026-T1 ou ?debut=2026-01-01&fin=2026-03-31 ou ?mois=2026-03
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     // Determiner la periode
@@ -37,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Recuperer le regime TVA de l'entreprise
     const entreprise = await prisma.entreprise.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
     });
 
     if (!entreprise) {
@@ -61,7 +65,7 @@ export async function GET(request: NextRequest) {
     // === TVA COLLECTEE (depuis les factures emises) ===
     const factures = await prisma.facture.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         statut: { not: 'BROUILLON' },
         dateEmission: { gte: debut, lte: fin },
@@ -73,7 +77,7 @@ export async function GET(request: NextRequest) {
     // Avoirs de la periode (reduisent la TVA collectee)
     const avoirs = await prisma.facture.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         statut: { not: 'BROUILLON' },
         dateEmission: { gte: debut, lte: fin },
@@ -114,7 +118,7 @@ export async function GET(request: NextRequest) {
     // === TVA DEDUCTIBLE (depuis les achats) ===
     const achats = await prisma.ficheAchat.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         date: { gte: debut, lte: fin },
       },

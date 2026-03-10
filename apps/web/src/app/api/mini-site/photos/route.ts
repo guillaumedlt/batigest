@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // POST /api/mini-site/photos — Ajouter une photo
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.url) {
@@ -13,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     const site = await prisma.miniSite.findFirst({
-      where: { userId: TEMP_USER_ID },
+      where: { userId: userId },
       include: { photos: true },
     });
 
@@ -49,6 +53,11 @@ export async function POST(request: NextRequest) {
 // PATCH /api/mini-site/photos — Modifier une photo (legende, ordre, avantApres)
 export async function PATCH(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.id) {
@@ -60,7 +69,7 @@ export async function PATCH(request: NextRequest) {
       include: { miniSite: true },
     });
 
-    if (!photo || photo.miniSite.userId !== TEMP_USER_ID) {
+    if (!photo || photo.miniSite.userId !== userId) {
       return NextResponse.json({ error: 'Photo non trouvee.' }, { status: 404 });
     }
 
@@ -83,6 +92,11 @@ export async function PATCH(request: NextRequest) {
 // DELETE /api/mini-site/photos — Supprimer une photo
 export async function DELETE(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.id) {
@@ -94,7 +108,7 @@ export async function DELETE(request: NextRequest) {
       include: { miniSite: true },
     });
 
-    if (!photo || photo.miniSite.userId !== TEMP_USER_ID) {
+    if (!photo || photo.miniSite.userId !== userId) {
       return NextResponse.json({ error: 'Photo non trouvee.' }, { status: 404 });
     }
 

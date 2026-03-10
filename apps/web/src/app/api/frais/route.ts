@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // Bareme kilometrique fiscal 2024 (voiture)
 // https://www.service-public.fr/particuliers/actualites/A14686
@@ -20,13 +19,18 @@ function calculIndemniteKm(km: number): number {
 // GET /api/frais — Liste des notes de frais
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const categorie = searchParams.get('categorie') || undefined;
     const mois = searchParams.get('mois') || undefined; // format: 2026-03
 
     const where: Record<string, unknown> = {
-      userId: TEMP_USER_ID,
+      userId: userId,
       deletedAt: null,
     };
 
@@ -61,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     const statsMois = await prisma.noteFrais.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         date: { gte: debutMois, lt: finMois },
       },
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
 
     const statsNonRemb = await prisma.noteFrais.aggregate({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         remboursee: false,
       },
@@ -97,6 +101,11 @@ export async function GET(request: NextRequest) {
 // POST /api/frais — Creer une note de frais
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.description || !body.date || !body.categorie) {
@@ -134,7 +143,7 @@ export async function POST(request: NextRequest) {
 
     const note = await prisma.noteFrais.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         date: new Date(body.date),
         categorie: body.categorie,
         montant: new Prisma.Decimal(montant),

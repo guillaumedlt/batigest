@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/devis — Liste des devis
 export async function GET(request: NextRequest) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search') || '';
   const statut = searchParams.get('statut') || undefined;
 
   const devis = await prisma.devis.findMany({
     where: {
-      userId: TEMP_USER_ID,
+      userId: userId,
       deletedAt: null,
       ...(statut ? { statut: statut as 'BROUILLON' | 'ENVOYE' | 'ACCEPTE' | 'REFUSE' | 'EXPIRE' } : {}),
       ...(search
@@ -43,6 +47,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/devis — Creer un devis
 export async function POST(request: NextRequest) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const body = await request.json();
 
   if (!body.contactId || !body.objet) {
@@ -54,7 +63,7 @@ export async function POST(request: NextRequest) {
 
   // Verifier que le contact existe
   const contact = await prisma.contact.findFirst({
-    where: { id: body.contactId, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id: body.contactId, userId: userId, deletedAt: null },
   });
   if (!contact) {
     return NextResponse.json({ error: 'Contact non trouve.' }, { status: 404 });
@@ -62,7 +71,7 @@ export async function POST(request: NextRequest) {
 
   // Generer le numero sequentiel
   const entreprise = await prisma.entreprise.findFirst({
-    where: { userId: TEMP_USER_ID },
+    where: { userId: userId },
   });
 
   const year = new Date().getFullYear();
@@ -76,7 +85,7 @@ export async function POST(request: NextRequest) {
     sequenceNum = updated.sequenceDevis;
   } else {
     // Pas d'entreprise, compter les devis existants
-    const count = await prisma.devis.count({ where: { userId: TEMP_USER_ID } });
+    const count = await prisma.devis.count({ where: { userId: userId } });
     sequenceNum = count + 1;
   }
 
@@ -140,7 +149,7 @@ export async function POST(request: NextRequest) {
 
   const devis = await prisma.devis.create({
     data: {
-      userId: TEMP_USER_ID,
+      userId: userId,
       contactId: body.contactId,
       chantierId: body.chantierId || null,
       numero,

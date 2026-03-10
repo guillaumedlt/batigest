@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/tva/export?mois=2026-03 ou ?periode=2026-T1
 // Retourne un CSV avec le detail des operations TVA
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     let debut: Date;
@@ -36,7 +40,7 @@ export async function GET(request: NextRequest) {
     // Factures emises (TVA collectee)
     const factures = await prisma.facture.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         statut: { not: 'BROUILLON' },
         dateEmission: { gte: debut, lte: fin },
@@ -51,7 +55,7 @@ export async function GET(request: NextRequest) {
     // Achats (TVA deductible)
     const achats = await prisma.ficheAchat.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         date: { gte: debut, lte: fin },
       },

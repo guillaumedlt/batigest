@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   ShoppingCart,
   Library,
@@ -12,6 +12,7 @@ import {
   Settings,
   Users,
   ChevronRight,
+  LogOut,
 } from 'lucide-react';
 
 const items = [
@@ -26,6 +27,14 @@ const items = [
 ];
 
 export default function PlusPage() {
+  const router = useRouter();
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold text-gray-900">Plus</h1>
@@ -51,6 +60,20 @@ export default function PlusPage() {
             </Link>
           );
         })}
+
+        {/* Deconnexion */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm w-full
+                     active:bg-red-50 transition-colors"
+        >
+          <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <LogOut size={22} className="text-red-500" />
+          </div>
+          <div className="flex-1 min-w-0 text-left">
+            <p className="font-semibold text-red-600">Se deconnecter</p>
+          </div>
+        </button>
       </div>
     </div>
   );

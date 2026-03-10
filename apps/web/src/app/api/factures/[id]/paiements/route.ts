@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // POST /api/factures/:id/paiements — Enregistrer un paiement
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = await request.json();
 
   // Verifier la facture
   const facture = await prisma.facture.findFirst({
-    where: { id, userId: TEMP_USER_ID, deletedAt: null },
+    where: { id, userId: userId, deletedAt: null },
   });
 
   if (!facture) {

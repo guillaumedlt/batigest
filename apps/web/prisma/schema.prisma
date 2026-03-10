@@ -12,11 +12,12 @@ datasource db {
 // ============================================
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  authId    String   @unique // Supabase Auth UID
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @default("") // bcrypt hash
+  authId       String   @unique @default(uuid()) // Legacy, conserve pour compatibilite
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   entreprise Entreprise?
   contacts   Contact[]

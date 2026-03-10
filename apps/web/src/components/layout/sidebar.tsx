@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Home,
@@ -15,6 +15,7 @@ import {
   Settings,
   HardHat,
   Library,
+  LogOut,
 } from 'lucide-react';
 
 const mainNav = [
@@ -36,9 +37,16 @@ const secondaryNav = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   function isActive(href: string) {
     return href === '/' ? pathname === '/' : pathname.startsWith(href);
+  }
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
   }
 
   return (
@@ -104,8 +112,8 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Parametres en bas */}
-      <div className="px-3 py-4 border-t border-gray-100">
+      {/* Parametres + Deconnexion */}
+      <div className="px-3 py-4 border-t border-gray-100 space-y-1">
         <Link
           href="/parametres"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
@@ -118,6 +126,14 @@ export default function Sidebar() {
           <Settings size={20} />
           Parametres
         </Link>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium w-full
+                     text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+        >
+          <LogOut size={20} />
+          Se deconnecter
+        </button>
       </div>
     </aside>
   );

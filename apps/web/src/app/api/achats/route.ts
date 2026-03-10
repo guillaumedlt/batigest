@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { Prisma } from '@prisma/client';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/achats — Liste des fiches d'achat
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const categorie = searchParams.get('categorie') || undefined;
@@ -14,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const achats = await prisma.ficheAchat.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         ...(categorie ? { categorie: categorie as 'MATERIAUX' | 'OUTILLAGE' | 'LOCATION' | 'SOUS_TRAITANCE' | 'AUTRE' } : {}),
         ...(year ? { date: { gte: new Date(Number(year), 0, 1), lte: new Date(Number(year), 11, 31, 23, 59, 59) } } : {}),
@@ -44,6 +48,11 @@ export async function GET(request: NextRequest) {
 // POST /api/achats — Creer une fiche d'achat
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     if (!body.designation || !body.date || !body.categorie || body.montantHT === undefined || body.tauxTVA === undefined) {
@@ -67,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     const achat = await prisma.ficheAchat.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         fournisseurId: body.fournisseurId || null,
         date: new Date(body.date),
         designation: body.designation,

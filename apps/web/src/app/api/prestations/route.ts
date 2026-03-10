@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/prestations?search=...&categorie=...
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const categorie = searchParams.get('categorie') || '';
 
-    const where: Record<string, unknown> = { userId: TEMP_USER_ID };
+    const where: Record<string, unknown> = { userId: userId };
 
     if (search) {
       where.OR = [
@@ -39,6 +43,11 @@ export async function GET(request: NextRequest) {
 // POST /api/prestations
 export async function POST(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { designation, description, unite, prixUnitaireHT, tauxTVA, categorie } = body;
 
@@ -48,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     const prestation = await prisma.prestation.create({
       data: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         designation,
         description: description || null,
         unite,
@@ -68,6 +77,11 @@ export async function POST(request: NextRequest) {
 // DELETE (via body for batch) — or single via query
 export async function DELETE(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
