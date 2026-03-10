@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-
-// TODO: Remplacer par l'ID utilisateur reel via Supabase Auth
-const TEMP_USER_ID = '00000000-0000-0000-0000-000000000001';
+import { getAuthUserId } from '@/lib/auth/get-user';
 
 // GET /api/contacts — Liste des contacts
 export async function GET(request: NextRequest) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const type = searchParams.get('type') || undefined;
 
     const contacts = await prisma.contact.findMany({
       where: {
-        userId: TEMP_USER_ID,
+        userId: userId,
         deletedAt: null,
         ...(type ? { type: type as 'CLIENT' | 'PROSPECT' | 'FOURNISSEUR' | 'SOUS_TRAITANT' } : {}),
         ...(search
@@ -40,6 +43,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/contacts — Creer un contact
 export async function POST(request: NextRequest) {
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Non authentifie.' }, { status: 401 });
+  }
+
   const body = await request.json();
 
   // Validation basique
@@ -60,7 +68,7 @@ export async function POST(request: NextRequest) {
 
   const contact = await prisma.contact.create({
     data: {
-      userId: TEMP_USER_ID,
+      userId: userId,
       type: body.type,
       nom: body.nom,
       prenom: body.prenom || null,
