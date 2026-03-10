@@ -345,7 +345,7 @@ export default function CalendrierPage() {
         <div className="grid grid-cols-7 gap-px bg-gray-200 rounded-xl overflow-hidden">
           {/* Day headers */}
           {JOURS.map((j, idx) => (
-            <div key={j} className="bg-gray-50 text-center py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase">
+            <div key={j} className="bg-gray-50 text-center py-2 text-xs font-semibold text-gray-500 uppercase">
               <span className="sm:hidden">{JOURS_MOBILE[idx]}</span>
               <span className="hidden sm:inline">{j}</span>
             </div>
@@ -365,12 +365,12 @@ export default function CalendrierPage() {
                   setSelectedEvent(null);
                 }}
                 onDoubleClick={() => openCreateModal(day.date)}
-                className={`bg-white min-h-[56px] sm:min-h-[80px] md:min-h-[100px] p-0.5 sm:p-1 cursor-pointer transition-colors
+                className={`bg-white min-h-[60px] sm:min-h-[80px] md:min-h-[100px] p-1 sm:p-1.5 cursor-pointer transition-colors
                            hover:bg-blue-50/50
                            ${!day.isCurrentMonth ? 'opacity-40' : ''}
                            ${isSelected ? 'ring-2 ring-blue-500 ring-inset' : ''}`}
               >
-                <div className={`text-[11px] sm:text-sm font-medium mb-0.5 w-5 h-5 sm:w-7 sm:h-7 flex items-center justify-center rounded-full mx-auto sm:mx-0
+                <div className={`text-xs sm:text-sm font-medium mb-0.5 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full mx-auto sm:mx-0
                                 ${isToday ? 'bg-blue-600 text-white' : 'text-gray-700'}`}>
                   {day.date.getDate()}
                 </div>
@@ -383,7 +383,7 @@ export default function CalendrierPage() {
                         setSelectedEvent(ev);
                         setSelectedDate(new Date(ev.dateDebut));
                       }}
-                      className={`w-full text-left text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded truncate
+                      className={`w-full text-left text-xs px-1.5 py-0.5 rounded truncate
                                  ${TYPE_BG[ev.type] || 'bg-gray-50 text-gray-700'} border`}
                     >
                       {!ev.journeeEntiere && (
@@ -393,7 +393,7 @@ export default function CalendrierPage() {
                     </button>
                   ))}
                   {dayEvents.length > 3 && (
-                    <p className="text-[10px] text-gray-400 px-1">+{dayEvents.length - 3}</p>
+                    <p className="text-xs text-gray-400 px-1">+{dayEvents.length - 3}</p>
                   )}
                 </div>
                 {/* Mobile: dots only */}
@@ -451,7 +451,7 @@ export default function CalendrierPage() {
                     <div className={`w-1 h-full min-h-[40px] rounded-full ${TYPE_COLORS[ev.type]}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${TYPE_BG[ev.type]}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_BG[ev.type]}`}>
                           {TYPE_LABELS[ev.type]}
                         </span>
                       </div>

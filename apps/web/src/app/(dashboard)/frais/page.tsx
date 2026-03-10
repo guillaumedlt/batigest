@@ -204,7 +204,7 @@ export default function FraisPage() {
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
                         <span>{formatDate(note.date)}</span>
-                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium ${CATEGORIE_COLORS[note.categorie]}`}>
+                        <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${CATEGORIE_COLORS[note.categorie]}`}>
                           {CATEGORIE_LABELS[note.categorie]}
                         </span>
                         {note.km && <span>{note.km} km</span>}
@@ -220,7 +220,7 @@ export default function FraisPage() {
                       <p className="font-semibold text-gray-900">{formatEuros(note.montant)}</p>
                       <button
                         onClick={() => toggleRembourse(note.id, note.remboursee)}
-                        className={`text-[10px] font-medium mt-0.5 ${note.remboursee ? 'text-green-600' : 'text-orange-600 hover:underline'}`}
+                        className={`text-xs font-medium mt-0.5 ${note.remboursee ? 'text-green-600' : 'text-orange-600 hover:underline'}`}
                       >
                         {note.remboursee ? 'Remboursee' : 'Marquer remb.'}
                       </button>

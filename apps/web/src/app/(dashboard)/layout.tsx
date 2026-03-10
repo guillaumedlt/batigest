@@ -2,7 +2,7 @@ import BottomNav from '@/components/layout/bottom-nav';
 import Sidebar from '@/components/layout/sidebar';
 import FAB from '@/components/layout/fab';
 import TopBar from '@/components/layout/top-bar';
-import VoiceButton from '@/components/voice/voice-button';
+
 
 export default function DashboardLayout({
   children,
@@ -27,9 +27,6 @@ export default function DashboardLayout({
 
       {/* FAB — mobile uniquement */}
       <FAB />
-
-      {/* Voice button — mobile uniquement */}
-      <VoiceButton />
 
       {/* Bottom nav — mobile uniquement */}
       <BottomNav />

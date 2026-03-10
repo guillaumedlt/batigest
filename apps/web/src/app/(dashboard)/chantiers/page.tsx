@@ -86,7 +86,7 @@ export default function ChantiersPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <div className="inline-flex p-2 rounded-xl bg-blue-50 text-blue-600 mb-2">
             <HardHat size={20} />
@@ -128,7 +128,7 @@ export default function ChantiersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un chantier..."
-            className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-sm
+            className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-base
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>

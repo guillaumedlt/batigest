@@ -143,7 +143,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-white rounded-2xl p-4 shadow-sm">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">CA Facturé</p>
           <p className="text-xl font-bold text-gray-900">{formatEuros(c.totalFacture)}</p>
@@ -195,9 +195,9 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         {/* Main content */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4">
           {/* Tabs */}
           <div className="flex gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto">
             {(['apercu', 'devis', 'factures', 'depenses'] as const).map((t) => (
@@ -216,13 +216,13 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
           {tab === 'apercu' && (
             <div className="space-y-4">
               {c.description && (
-                <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+                <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
                   <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Description</h2>
                   <p className="text-sm text-gray-600 whitespace-pre-wrap">{c.description}</p>
                 </div>
               )}
               {/* Recent activity */}
-              <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+              <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
                 <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Activité récente</h2>
                 {c.devis.length === 0 && c.factures.length === 0 && c.achats.length === 0 ? (
                   <p className="text-sm text-gray-400 py-4 text-center">Aucune activité</p>
@@ -373,7 +373,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
         <div className="space-y-4">
           {/* Client */}
           {c.client && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Client</h2>
               <Link href={`/contacts/${c.client.id}`} className="flex items-start gap-3 group">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -388,7 +388,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
           )}
 
           {/* Dates */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Dates</h2>
             <div className="space-y-2 text-sm">
               {c.dateDebut && (
@@ -409,7 +409,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* Actions */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Actions</h2>
             <div className="space-y-2">
               {c.statut === 'EN_ATTENTE' && (
@@ -440,7 +440,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* Quick-create links */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Créer</h2>
             <div className="space-y-2">
               <Link href={`/devis/nouveau?chantierId=${c.id}${c.client ? `&contactId=${c.client.id}` : ''}`}
@@ -468,7 +468,7 @@ export default function ChantierDetailPage({ params }: { params: Promise<{ id: s
 
           {/* Notes */}
           {c.notes && (
-            <div className="bg-amber-50 rounded-2xl p-4 lg:p-6">
+            <div className="bg-amber-50 rounded-2xl p-4 md:p-5 lg:p-6">
               <h2 className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Notes</h2>
               <p className="text-sm text-amber-800 whitespace-pre-wrap">{c.notes}</p>
             </div>

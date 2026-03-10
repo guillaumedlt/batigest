@@ -130,12 +130,12 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
         </div>
         <div className="flex gap-2">
           <button onClick={() => router.push(`/contacts/${id}/modifier`)}
-            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
+            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
                        text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
             <Edit3 size={16} /> Modifier
           </button>
           <button onClick={() => router.push(`/contacts/${id}/modifier`)}
-            className="lg:hidden p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200"
+            className="md:hidden p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200"
             aria-label="Modifier">
             <Edit3 size={20} className="text-gray-600" />
           </button>
@@ -148,9 +148,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Layout 2 colonnes desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         {/* Colonne gauche — infos + actions rapides */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4">
           {/* Actions rapides — gros boutons tactiles */}
           <div className="grid grid-cols-4 gap-2 lg:gap-3">
             <ActionButton href={`tel:${contact.telephone}`} icon={Phone} label="Appeler"
@@ -170,9 +170,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Informations */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="font-semibold text-gray-900 mb-4">Informations</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {contact.entreprise && (
                 <InfoRow icon={<Building2 size={18} />} label="Entreprise" value={contact.entreprise} />
               )}
@@ -191,7 +191,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Notes */}
           {contact.notes && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="font-semibold text-gray-900 mb-2">Notes</h2>
               <p className="text-gray-600 whitespace-pre-wrap">{contact.notes}</p>
             </div>
@@ -200,7 +200,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
 
         {/* Colonne droite — actions et historique */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="font-semibold text-gray-900 mb-3">Actions</h2>
             <div className="space-y-2">
               <Link href={`/devis/nouveau?contactId=${contact.id}`}
@@ -219,7 +219,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Historique */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="font-semibold text-gray-900 mb-3">Historique</h2>
             {contact.devis.length === 0 && contact.factures.length === 0 && contact.chantiers.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-4">
@@ -239,7 +239,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                             <Hammer size={14} className="text-gray-400" />
                             <span className="text-sm font-medium text-gray-900">{ch.nom}</span>
                           </div>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${CHANTIER_STATUT[ch.statut] || ''}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CHANTIER_STATUT[ch.statut] || ''}`}>
                             {ch.statut.replace('_', ' ')}
                           </span>
                         </Link>
@@ -262,7 +262,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-semibold text-gray-900">{formatEuros(d.totalTTC)}</p>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${DEVIS_STATUT[d.statut] || ''}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${DEVIS_STATUT[d.statut] || ''}`}>
                               {d.statut}
                             </span>
                           </div>
@@ -285,7 +285,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-semibold text-gray-900">{formatEuros(f.totalTTC)}</p>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${FACTURE_STATUT[f.statut] || ''}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${FACTURE_STATUT[f.statut] || ''}`}>
                               {f.statut.replace('_', ' ')}
                             </span>
                           </div>

@@ -147,7 +147,7 @@ export default function ParametresPage() {
           <h2 className="font-semibold text-gray-900">Identite de l&apos;entreprise</h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l&apos;entreprise</label>
             <input
@@ -205,7 +205,7 @@ export default function ParametresPage() {
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
             <input
@@ -227,7 +227,7 @@ export default function ParametresPage() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Telephone</label>
             <input
@@ -307,7 +307,7 @@ export default function ParametresPage() {
         </div>
         <p className="text-sm text-gray-500">Obligatoire pour les artisans du batiment. Ces informations apparaitront sur vos devis et factures.</p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l&apos;assureur</label>
             <input

@@ -226,13 +226,13 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         {/* Colonne principale */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4">
 
           {/* Barre de progression paiement */}
           {facture.statut !== 'BROUILLON' && facture.statut !== 'ANNULEE' && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-500">Paiement</span>
                 <span className="text-sm font-medium text-gray-900">
@@ -255,7 +255,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
           )}
 
           {/* Client */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Client</h2>
             <Link href={`/contacts/${contact.id}`} className="flex items-start gap-3 group">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -270,7 +270,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Chantier */}
           {facture.chantier && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Chantier</h2>
               <Link href={`/chantiers/${facture.chantier.id}`} className="flex items-center gap-2 group">
                 <MapPin size={16} className="text-gray-400" />
@@ -283,14 +283,14 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Lignes */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-4 lg:p-6 pb-0">
+            <div className="p-4 md:p-5 lg:p-6 pb-0">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                 Lignes ({facture.lignes.length})
               </h2>
             </div>
 
             {/* Desktop */}
-            <div className="hidden lg:block">
+            <div className="hidden md:block">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
@@ -321,7 +321,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Mobile */}
-            <div className="lg:hidden divide-y divide-gray-50">
+            <div className="md:hidden divide-y divide-gray-50">
               {facture.lignes.map((l) => (
                 <div key={l.id} className="p-4">
                   <div className="flex justify-between items-start">
@@ -338,7 +338,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Totaux */}
-            <div className="border-t border-gray-100 p-4 lg:p-6 bg-gray-50/50">
+            <div className="border-t border-gray-100 p-4 md:p-5 lg:p-6 bg-gray-50/50">
               <div className="max-w-xs ml-auto space-y-1.5">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Total HT</span>
@@ -360,7 +360,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Historique des paiements */}
           {facture.paiements.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                 Paiements ({facture.paiements.length})
               </h2>
@@ -386,7 +386,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Conditions */}
           {facture.conditions && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Conditions</h2>
               <p className="text-sm text-gray-600 whitespace-pre-wrap">{facture.conditions}</p>
             </div>
@@ -397,7 +397,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
         <div className="space-y-4">
 
           {/* Dates */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Dates</h2>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
@@ -416,7 +416,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Actions */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Actions</h2>
             <div className="space-y-2">
               {facture.statut === 'BROUILLON' && (
@@ -459,7 +459,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
 
           {/* Formulaire paiement */}
           {showPaiement && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border-2 border-green-200">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm border-2 border-green-200">
               <h2 className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-3">Nouveau paiement</h2>
               <div className="space-y-3">
                 <div>

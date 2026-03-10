@@ -108,7 +108,7 @@ export default function FacturesListPage() {
       </div>
 
       {/* Recherche + filtres */}
-      <div className="flex flex-col lg:flex-row gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -120,12 +120,12 @@ export default function FacturesListPage() {
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0">
           {['', 'BROUILLON', 'EMISE', 'PAYEE_PARTIELLEMENT', 'PAYEE', 'ANNULEE'].map((statut) => (
             <button
               key={statut}
               onClick={() => setFilterStatut(statut)}
-              className={`px-3 py-1.5 lg:px-4 lg:py-2.5 rounded-full text-sm font-medium whitespace-nowrap min-h-[36px] lg:min-h-[44px]
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap min-h-[44px]
                          transition-colors ${
                            filterStatut === statut
                              ? 'bg-blue-600 text-white'
@@ -174,7 +174,7 @@ export default function FacturesListPage() {
       ) : (
         <>
           {/* TABLEAU desktop */}
-          <div className="hidden lg:block bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="hidden md:block bg-white rounded-2xl shadow-sm overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100">
@@ -244,7 +244,7 @@ export default function FacturesListPage() {
           </div>
 
           {/* CARDS mobile */}
-          <div className="lg:hidden space-y-2">
+          <div className="md:hidden space-y-2">
             {factures.map((facture) => {
               const StatutIcon = STATUT_ICONS[facture.statut] || Clock;
               const overdue = isOverdue(facture);

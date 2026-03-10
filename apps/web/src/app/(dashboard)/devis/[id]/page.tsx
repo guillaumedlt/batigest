@@ -204,14 +204,14 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
         <div className="flex gap-2">
           {devis.statut === 'BROUILLON' && (
             <button onClick={() => router.push(`/devis/${id}/modifier`)}
-              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
                          text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
               <Edit3 size={16} /> Modifier
             </button>
           )}
           {devis.statut === 'BROUILLON' && (
             <button onClick={() => router.push(`/devis/${id}/modifier`)}
-              className="lg:hidden p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200"
+              className="md:hidden p-2 rounded-xl hover:bg-gray-100 active:bg-gray-200"
               aria-label="Modifier">
               <Edit3 size={20} className="text-gray-600" />
             </button>
@@ -224,12 +224,12 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         {/* Colonne principale */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4">
 
           {/* Client */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Client</h2>
             <Link href={`/contacts/${contact.id}`} className="flex items-start gap-3 group">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -245,7 +245,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Chantier */}
           {devis.chantier && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Chantier</h2>
               <Link href={`/chantiers/${devis.chantier.id}`} className="flex items-center gap-2 group">
                 <MapPin size={16} className="text-gray-400" />
@@ -258,14 +258,14 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Lignes du devis */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-4 lg:p-6 pb-0">
+            <div className="p-4 md:p-5 lg:p-6 pb-0">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                 Prestations ({devis.lignes.length} ligne{devis.lignes.length > 1 ? 's' : ''})
               </h2>
             </div>
 
             {/* Version desktop — tableau */}
-            <div className="hidden lg:block">
+            <div className="hidden md:block">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
@@ -296,7 +296,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Version mobile — cartes */}
-            <div className="lg:hidden divide-y divide-gray-50">
+            <div className="md:hidden divide-y divide-gray-50">
               {devis.lignes.map((l) => (
                 <div key={l.id} className="p-4">
                   <div className="flex justify-between items-start">
@@ -315,7 +315,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Totaux */}
-            <div className="border-t border-gray-100 p-4 lg:p-6 bg-gray-50/50">
+            <div className="border-t border-gray-100 p-4 md:p-5 lg:p-6 bg-gray-50/50">
               <div className="max-w-xs ml-auto space-y-1.5">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Total HT</span>
@@ -349,7 +349,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Conditions */}
           {devis.conditions && (
-            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
               <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Conditions</h2>
               <p className="text-sm text-gray-600 whitespace-pre-wrap">{devis.conditions}</p>
             </div>
@@ -357,7 +357,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Notes internes */}
           {devis.notes && (
-            <div className="bg-amber-50 rounded-2xl p-4 lg:p-6">
+            <div className="bg-amber-50 rounded-2xl p-4 md:p-5 lg:p-6">
               <h2 className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Notes internes</h2>
               <p className="text-sm text-amber-800 whitespace-pre-wrap">{devis.notes}</p>
             </div>
@@ -368,7 +368,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
         <div className="space-y-4">
 
           {/* Dates */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Dates</h2>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
@@ -385,7 +385,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {/* Actions */}
-          <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Actions</h2>
             <div className="space-y-2">
               {/* Changer le statut */}

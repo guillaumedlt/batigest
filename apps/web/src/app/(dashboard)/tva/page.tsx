@@ -268,7 +268,7 @@ export default function TvaPage() {
           ) : (
             <>
               {/* Resume 3 cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-white rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp size={18} className="text-blue-600" />
@@ -323,8 +323,8 @@ export default function TvaPage() {
                 </div>
 
                 {/* Tableau style formulaire fiscal */}
-                <div className="border border-gray-200 rounded-xl overflow-hidden">
-                  <table className="w-full text-sm">
+                <div className="border border-gray-200 rounded-xl overflow-x-auto">
+                  <table className="w-full text-sm min-w-[480px]">
                     <thead>
                       <tr className="bg-gray-50 border-b border-gray-200">
                         <th className="text-left px-4 py-3 font-semibold text-gray-700">Ligne</th>

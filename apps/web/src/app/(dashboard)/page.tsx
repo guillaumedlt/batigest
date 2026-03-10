@@ -98,7 +98,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats rapides */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
         <StatCard
           label="Devis en attente"
           value={String(stats.devisEnAttente)}
@@ -128,9 +128,9 @@ export default function DashboardPage() {
       </div>
 
       {/* CA Chart + Events */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
         {/* Chart CA */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-gray-900">Chiffre d&apos;affaires</h2>
             <div className="flex items-center gap-4 text-xs">
@@ -142,10 +142,10 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-          <div className="flex items-end gap-2 h-40">
+          <div className="flex items-end gap-2 h-28 md:h-36 lg:h-40">
             {stats.caMensuel.map((m) => (
               <div key={m.mois} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full flex gap-0.5 items-end" style={{ height: '120px' }}>
+                <div className="w-full flex gap-0.5 items-end h-20 md:h-28 lg:h-[120px]">
                   <div
                     className="flex-1 bg-blue-500 rounded-t"
                     style={{ height: `${(m.ca / maxCA) * 100}%`, minHeight: m.ca > 0 ? '4px' : '0' }}
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                     style={{ height: `${(m.depenses / maxCA) * 100}%`, minHeight: m.depenses > 0 ? '4px' : '0' }}
                   />
                 </div>
-                <span className="text-[10px] text-gray-400 whitespace-nowrap">{m.mois}</span>
+                <span className="text-[11px] md:text-xs text-gray-400 whitespace-nowrap">{m.mois}</span>
               </div>
             ))}
           </div>
@@ -174,7 +174,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Agenda du jour */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-gray-900">Agenda</h2>
             <Link href="/calendrier" className="text-sm text-blue-600 hover:underline">Voir tout</Link>
@@ -217,8 +217,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Activité récente */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-3">Derniers devis</h2>
           {stats.dernDevis.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">Aucun devis</p>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
+        <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-3">Dernières factures</h2>
           {stats.dernFactures.length === 0 ? (
             <p className="text-sm text-gray-400 py-4 text-center">Aucune facture</p>
