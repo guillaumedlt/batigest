@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, Landmark, Printer, ChevronLeft, ChevronRight,
@@ -40,6 +40,14 @@ const TAUX_COTISATIONS = {
 };
 
 export default function UrssafPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse p-6"><div className="h-8 bg-gray-200 rounded w-1/3" /></div>}>
+      <UrssafPageInner />
+    </Suspense>
+  );
+}
+
+function UrssafPageInner() {
   const searchParams = useSearchParams();
   const initialSection = searchParams.get('section') === 'franchise' ? 'franchise' : 'urssaf';
 

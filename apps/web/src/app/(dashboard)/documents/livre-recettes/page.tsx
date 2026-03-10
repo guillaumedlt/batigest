@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, BookOpen, Printer, Download, ChevronLeft, ChevronRight,
@@ -48,6 +48,14 @@ function formatDate(dateStr: string) {
 }
 
 export default function LivreRecettesPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse p-6"><div className="h-8 bg-gray-200 rounded w-1/3" /></div>}>
+      <LivreRecettesInner />
+    </Suspense>
+  );
+}
+
+function LivreRecettesInner() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') === 'achats' ? 'achats' : 'recettes';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Scale, Printer, Shield } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
@@ -24,6 +24,14 @@ type Entreprise = {
 };
 
 export default function CgvPage() {
+  return (
+    <Suspense fallback={<div className="animate-pulse p-6"><div className="h-8 bg-gray-200 rounded w-1/3" /></div>}>
+      <CgvPageInner />
+    </Suspense>
+  );
+}
+
+function CgvPageInner() {
   const searchParams = useSearchParams();
   const initialSection = searchParams.get('section') === 'assurance' ? 'assurance' : 'cgv';
 
