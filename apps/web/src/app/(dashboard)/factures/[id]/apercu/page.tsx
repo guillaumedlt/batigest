@@ -242,11 +242,15 @@ export default function FactureApercuPage({ params }: { params: Promise<{ id: st
           {entreprise.franchiseTVA && (
             <p>TVA non applicable, art. 293 B du CGI</p>
           )}
+          {Object.keys(tvaDetails).includes('0') && !entreprise.franchiseTVA && (
+            <p className="font-medium text-gray-500">Autoliquidation de la TVA par le preneur — art. 283-2 nonies du CGI (sous-traitance BTP)</p>
+          )}
           {entreprise.assuranceDecennale && (
             <p>Assurance décennale : {entreprise.assuranceDecennale} — N° {entreprise.assuranceNumero}</p>
           )}
           {entreprise.mentionsFacture && <p>{entreprise.mentionsFacture}</p>}
           <p>En cas de retard de paiement, une pénalité de 3 fois le taux d&apos;intérêt légal sera appliquée, ainsi qu&apos;une indemnité forfaitaire de 40 € pour frais de recouvrement.</p>
+          <p>Clause de réserve de propriété : le vendeur conserve la propriété des biens et matériaux fournis jusqu&apos;au paiement intégral du prix, conformément à la loi n° 80-335 du 12 mai 1980.</p>
         </div>
       </div>
     </div>
