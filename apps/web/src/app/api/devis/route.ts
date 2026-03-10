@@ -80,7 +80,8 @@ export async function POST(request: NextRequest) {
     sequenceNum = count + 1;
   }
 
-  const numero = `D-${year}-${String(sequenceNum).padStart(3, '0')}`;
+  const prefixDevis = entreprise?.prefixDevis || 'D';
+  const numero = `${prefixDevis}-${year}-${String(sequenceNum).padStart(3, '0')}`;
 
   // Si franchise en base, forcer TVA a 0
   const isFranchise = entreprise?.franchiseTVA || entreprise?.regimeTVA === 'FRANCHISE';

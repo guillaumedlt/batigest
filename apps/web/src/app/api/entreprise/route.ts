@@ -67,6 +67,12 @@ export async function PATCH(request: NextRequest) {
         ...(body.mentionsDevis !== undefined ? { mentionsDevis: body.mentionsDevis } : {}),
         ...(body.mentionsFacture !== undefined ? { mentionsFacture: body.mentionsFacture } : {}),
         ...(body.rib !== undefined ? { rib: body.rib } : {}),
+        ...(body.prefixDevis !== undefined ? { prefixDevis: body.prefixDevis } : {}),
+        ...(body.prefixFacture !== undefined ? { prefixFacture: body.prefixFacture } : {}),
+        ...(body.prefixAvoir !== undefined ? { prefixAvoir: body.prefixAvoir } : {}),
+        ...(body.sequenceDevis !== undefined ? { sequenceDevis: Number(body.sequenceDevis) } : {}),
+        ...(body.sequenceFacture !== undefined ? { sequenceFacture: Number(body.sequenceFacture) } : {}),
+        ...(body.sequenceAvoir !== undefined ? { sequenceAvoir: Number(body.sequenceAvoir) } : {}),
       },
     });
 

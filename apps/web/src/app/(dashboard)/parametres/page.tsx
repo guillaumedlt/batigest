@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Building2, FileText, Shield } from 'lucide-react';
+import { Save, Building2, FileText, Shield, Hash } from 'lucide-react';
 
 type Entreprise = {
   id: string;
@@ -25,6 +25,12 @@ type Entreprise = {
   mentionsDevis: string | null;
   mentionsFacture: string | null;
   rib: string | null;
+  prefixDevis: string;
+  prefixFacture: string;
+  prefixAvoir: string;
+  sequenceDevis: number;
+  sequenceFacture: number;
+  sequenceAvoir: number;
 };
 
 const FORMES_JURIDIQUES = [
@@ -93,8 +99,14 @@ export default function ParametresPage() {
     setSaving(false);
   }
 
-  function updateField(field: string, value: string | boolean) {
+  function updateField(field: string, value: string | boolean | number) {
     if (!entreprise) return;
+    // Convertir en nombre pour les champs sequence
+    if (field.startsWith('sequence') && typeof value === 'string') {
+      const num = parseInt(value, 10);
+      setEntreprise({ ...entreprise, [field]: isNaN(num) ? 0 : num });
+      return;
+    }
     setEntreprise({ ...entreprise, [field]: value });
   }
 
@@ -362,6 +374,113 @@ export default function ParametresPage() {
             className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base font-mono
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
+        </div>
+      </div>
+
+      {/* Numerotation des documents */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Hash size={20} className="text-blue-600" />
+          <h2 className="font-semibold text-gray-900">Numerotation des documents</h2>
+        </div>
+        <p className="text-sm text-gray-500">
+          Personnalisez le prefixe et le compteur de vos devis, factures et avoirs. Utile pour reprendre votre historique existant.
+        </p>
+
+        {/* Devis */}
+        <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+          <p className="text-sm font-semibold text-gray-700">Devis</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prefixe</label>
+              <input
+                type="text"
+                value={entreprise.prefixDevis || 'D'}
+                onChange={(e) => updateField('prefixDevis', e.target.value.toUpperCase())}
+                maxLength={10}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prochain numero</label>
+              <input
+                type="number"
+                min={0}
+                value={entreprise.sequenceDevis ?? 0}
+                onChange={(e) => updateField('sequenceDevis', e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400">
+            Apercu : <span className="font-mono font-medium text-gray-600">{entreprise.prefixDevis || 'D'}-{new Date().getFullYear()}-{String((entreprise.sequenceDevis ?? 0) + 1).padStart(3, '0')}</span>
+          </p>
+        </div>
+
+        {/* Factures */}
+        <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+          <p className="text-sm font-semibold text-gray-700">Factures</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prefixe</label>
+              <input
+                type="text"
+                value={entreprise.prefixFacture || 'F'}
+                onChange={(e) => updateField('prefixFacture', e.target.value.toUpperCase())}
+                maxLength={10}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prochain numero</label>
+              <input
+                type="number"
+                min={0}
+                value={entreprise.sequenceFacture ?? 0}
+                onChange={(e) => updateField('sequenceFacture', e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400">
+            Apercu : <span className="font-mono font-medium text-gray-600">{entreprise.prefixFacture || 'F'}-{new Date().getFullYear()}-{String((entreprise.sequenceFacture ?? 0) + 1).padStart(3, '0')}</span>
+          </p>
+        </div>
+
+        {/* Avoirs */}
+        <div className="border border-gray-100 rounded-xl p-4 space-y-3">
+          <p className="text-sm font-semibold text-gray-700">Avoirs</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prefixe</label>
+              <input
+                type="text"
+                value={entreprise.prefixAvoir || 'A'}
+                onChange={(e) => updateField('prefixAvoir', e.target.value.toUpperCase())}
+                maxLength={10}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Prochain numero</label>
+              <input
+                type="number"
+                min={0}
+                value={entreprise.sequenceAvoir ?? 0}
+                onChange={(e) => updateField('sequenceAvoir', e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-mono
+                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400">
+            Apercu : <span className="font-mono font-medium text-gray-600">{entreprise.prefixAvoir || 'A'}-{new Date().getFullYear()}-{String((entreprise.sequenceAvoir ?? 0) + 1).padStart(3, '0')}</span>
+          </p>
         </div>
       </div>
 

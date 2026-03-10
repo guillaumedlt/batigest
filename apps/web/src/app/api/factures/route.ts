@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   const year = new Date().getFullYear();
   const factureType = body.type || 'CLASSIQUE';
   let sequenceNum = 1;
-  const prefix = factureType === 'AVOIR' ? 'A' : 'F';
+  const prefix = factureType === 'AVOIR' ? (entreprise?.prefixAvoir || 'A') : (entreprise?.prefixFacture || 'F');
 
   if (entreprise) {
     if (factureType === 'AVOIR') {
