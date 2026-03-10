@@ -10,17 +10,17 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden max-w-[100vw]">
       {/* Sidebar — desktop uniquement */}
       <Sidebar />
 
       {/* Zone principale */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Top bar — desktop uniquement */}
         <TopBar />
 
         {/* Contenu */}
-        <main className="flex-1 pb-20 lg:pb-6 pt-4 lg:pt-6 px-4 lg:px-8 max-w-6xl w-full mx-auto">
+        <main className="flex-1 pb-20 lg:pb-6 pt-4 lg:pt-6 px-4 lg:px-8 max-w-6xl w-full mx-auto overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -12,10 +12,24 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* Prevent text from causing horizontal overflow */
+p, span, td, th, li, label, h1, h2, h3, h4 {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Fix input text color — dark text for readability */
