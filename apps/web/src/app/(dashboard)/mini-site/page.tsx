@@ -1,7 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Globe, Save, ExternalLink, Eye, Copy, Check, Palette, Wrench, Briefcase, Clock } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import {
+  Globe, Save, ExternalLink, Eye, Copy, Check, Palette, Wrench, Briefcase, Clock,
+  Camera, ImagePlus, Trash2, X, Upload,
+} from 'lucide-react';
+
+type MiniSitePhoto = {
+  id: string;
+  url: string;
+  legende: string | null;
+  ordre: number;
+  avantApres: boolean;
+};
 
 type MiniSiteData = {
   id?: string;
@@ -14,6 +25,7 @@ type MiniSiteData = {
   email?: string;
   adresse?: string;
   zoneIntervention?: string;
+  logoUrl?: string | null;
   theme?: string;
   certifications?: string[];
   competences?: string[];
@@ -23,6 +35,7 @@ type MiniSiteData = {
   horaires?: string;
   siteWeb?: string;
   actif?: boolean;
+  photos?: MiniSitePhoto[];
 };
 
 const THEMES = [
@@ -31,6 +44,34 @@ const THEMES = [
   { value: 'ORANGE', label: 'Orange', color: 'bg-orange-500' },
   { value: 'GRIS', label: 'Gris', color: 'bg-gray-700' },
 ];
+
+// Redimensionner une image cote client via Canvas
+function resizeImage(file: File, maxWidth: number, quality: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('Canvas non supporte')); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Impossible de charger l\'image'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('Impossible de lire le fichier'));
+    reader.readAsDataURL(file);
+  });
+}
 
 function TagInput({ label, placeholder, tags, onAdd, onRemove, color = 'bg-blue-50 text-blue-700' }: {
   label: string; placeholder: string; tags: string[];
@@ -60,7 +101,7 @@ function TagInput({ label, placeholder, tags, onAdd, onRemove, color = 'bg-blue-
           type="button"
           onClick={add}
           className="px-4 h-12 rounded-xl bg-gray-100 text-gray-700 font-medium text-sm
-                     hover:bg-gray-200 transition-colors"
+                     hover:bg-gray-200 transition-colors min-h-[44px]"
         >
           Ajouter
         </button>
@@ -84,6 +125,11 @@ export default function MiniSitePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [photos, setPhotos] = useState<MiniSitePhoto[]>([]);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     slug: '',
@@ -103,6 +149,7 @@ export default function MiniSitePage() {
     competences: [] as string[],
     prestations: [] as string[],
     actif: true,
+    logoUrl: null as string | null,
   });
 
   const isNew = !site?.id;
@@ -113,6 +160,7 @@ export default function MiniSitePage() {
       .then((data) => {
         if (data.id) {
           setSite(data);
+          setPhotos(data.photos || []);
           setForm({
             slug: data.slug || '',
             nomEntreprise: data.nomEntreprise || '',
@@ -131,6 +179,7 @@ export default function MiniSitePage() {
             competences: data.competences || [],
             prestations: data.prestations || [],
             actif: data.actif ?? true,
+            logoUrl: data.logoUrl || null,
           });
         }
         setLoading(false);
@@ -164,6 +213,7 @@ export default function MiniSitePage() {
     if (res.ok) {
       const data = await res.json();
       setSite(data);
+      setPhotos(data.photos || []);
       alert(isNew ? 'Mini-site cree avec succes !' : 'Modifications enregistrees !');
     } else {
       const err = await res.json();
@@ -177,6 +227,87 @@ export default function MiniSitePage() {
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  // Logo upload — redimensionne a 400px et stocke en data URL
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez selectionner une image (JPG, PNG, WebP).');
+      return;
+    }
+    setUploadingLogo(true);
+    try {
+      const dataUrl = await resizeImage(file, 400, 0.85);
+      setForm({ ...form, logoUrl: dataUrl });
+    } catch {
+      alert('Erreur lors du traitement de l\'image.');
+    }
+    setUploadingLogo(false);
+    if (logoInputRef.current) logoInputRef.current.value = '';
+  }
+
+  // Photos upload — redimensionne a 1200px et envoie a l'API
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    if (photos.length + files.length > 12) {
+      alert(`Maximum 12 photos. Vous pouvez encore en ajouter ${12 - photos.length}.`);
+      return;
+    }
+    setUploadingPhoto(true);
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) continue;
+        const dataUrl = await resizeImage(file, 1200, 0.8);
+        const res = await fetch('/api/mini-site/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: dataUrl }),
+        });
+        if (res.ok) {
+          const photo = await res.json();
+          setPhotos((prev) => [...prev, photo]);
+        }
+      }
+    } catch {
+      alert('Erreur lors de l\'upload des photos.');
+    }
+    setUploadingPhoto(false);
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  }
+
+  async function deletePhoto(photoId: string) {
+    if (!confirm('Supprimer cette photo ?')) return;
+    const res = await fetch('/api/mini-site/photos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: photoId }),
+    });
+    if (res.ok) {
+      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+    }
+  }
+
+  async function toggleAvantApres(photo: MiniSitePhoto) {
+    const res = await fetch('/api/mini-site/photos', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: photo.id, avantApres: !photo.avantApres }),
+    });
+    if (res.ok) {
+      setPhotos((prev) => prev.map((p) => p.id === photo.id ? { ...p, avantApres: !p.avantApres } : p));
+    }
+  }
+
+  async function updateLegende(photo: MiniSitePhoto, legende: string) {
+    await fetch('/api/mini-site/photos', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: photo.id, legende: legende || null }),
+    });
+    setPhotos((prev) => prev.map((p) => p.id === photo.id ? { ...p, legende: legende || null } : p));
   }
 
   if (loading) {
@@ -201,7 +332,7 @@ export default function MiniSitePage() {
         </div>
         {!isNew && form.slug && (
           <a href={`/site/${form.slug}`} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors">
+            className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-colors min-h-[44px]">
             <Eye size={16} /> Voir le site
           </a>
         )}
@@ -214,7 +345,7 @@ export default function MiniSitePage() {
           <div className="flex items-center gap-2">
             <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-700 font-mono truncate">{siteUrl}</div>
             <button onClick={copyUrl}
-              className="flex items-center gap-1.5 px-4 py-3 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors active:scale-95">
+              className="flex items-center gap-1.5 px-4 py-3 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors active:scale-95 min-h-[44px]">
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? 'Copie !' : 'Copier'}
             </button>
@@ -224,12 +355,61 @@ export default function MiniSitePage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* === IDENTITE === */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        {/* === IDENTITE + LOGO === */}
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-4">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
             <Globe size={18} className="text-blue-600" /> Identite
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+
+          {/* Logo upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Logo / Photo de profil</label>
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                {form.logoUrl ? (
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 relative">
+                    <img src={form.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, logoUrl: null })}
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center
+                               text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                  >
+                    {uploadingLogo ? (
+                      <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Camera size={24} />
+                    )}
+                  </button>
+                )}
+              </div>
+              <div className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={uploadingLogo}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium
+                             hover:bg-gray-200 transition-colors min-h-[44px] disabled:opacity-50"
+                >
+                  <Upload size={16} />
+                  {form.logoUrl ? 'Changer l\'image' : 'Ajouter un logo'}
+                </button>
+                <p className="text-xs text-gray-400 mt-1">JPG, PNG ou WebP. Redimensionne a 400px.</p>
+              </div>
+              <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nom entreprise *</label>
               <input type="text" required value={form.nomEntreprise}
@@ -277,46 +457,140 @@ export default function MiniSitePage() {
           </div>
         </div>
 
-        {/* === PORTFOLIO : COMPETENCES + PRESTATIONS === */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm space-y-5">
+        {/* === PHOTOS DE REALISATIONS === */}
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Camera size={18} className="text-teal-600" /> Photos de realisations
+            </h2>
+            <span className="text-xs text-gray-400">{photos.length}/12</span>
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Montrez vos plus beaux chantiers pour convaincre vos futurs clients.
+          </p>
+
+          {/* Photos grid */}
+          {photos.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {photos.map((photo) => (
+                <div key={photo.id} className="relative group rounded-xl overflow-hidden bg-gray-100 aspect-[4/3]">
+                  <img src={photo.url} alt={photo.legende || 'Photo'} className="w-full h-full object-cover" />
+                  {/* Overlay actions */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-start justify-end p-2 opacity-0 group-hover:opacity-100">
+                    <button type="button" onClick={() => deletePhoto(photo.id)}
+                      className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  {/* Avant/Apres badge */}
+                  {photo.avantApres && (
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded">
+                      Avant/Apres
+                    </div>
+                  )}
+                  {/* Legende */}
+                  {photo.legende && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                      <p className="text-white text-xs truncate">{photo.legende}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Upload button */}
+          {photos.length < 12 && (
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={uploadingPhoto || isNew}
+              className="w-full flex items-center justify-center gap-3 py-6 rounded-xl border-2 border-dashed border-gray-300
+                         text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors
+                         disabled:opacity-50 disabled:pointer-events-none min-h-[80px]"
+            >
+              {uploadingPhoto ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                  Upload en cours...
+                </>
+              ) : (
+                <>
+                  <ImagePlus size={24} />
+                  <span className="font-medium">Ajouter des photos</span>
+                </>
+              )}
+            </button>
+          )}
+
+          {isNew && (
+            <p className="text-xs text-amber-600 bg-amber-50 rounded-xl p-3">
+              Creez d&apos;abord votre mini-site pour pouvoir ajouter des photos.
+            </p>
+          )}
+
+          <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+
+          {/* Photo details (legende + avant/apres toggle) */}
+          {photos.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Details des photos</p>
+              {photos.map((photo, idx) => (
+                <div key={photo.id} className="flex items-center gap-3 p-2 rounded-xl bg-gray-50">
+                  <img src={photo.url} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                  <input
+                    type="text"
+                    placeholder={`Legende photo ${idx + 1}...`}
+                    defaultValue={photo.legende || ''}
+                    onBlur={(e) => updateLegende(photo, e.target.value)}
+                    className="flex-1 h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm"
+                  />
+                  <button type="button" onClick={() => toggleAvantApres(photo)}
+                    className={`px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors min-h-[36px] ${
+                      photo.avantApres
+                        ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                        : 'bg-gray-100 text-gray-500 border border-gray-200 hover:bg-amber-50'
+                    }`}>
+                    Avant/Apres
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* === COMPETENCES + PRESTATIONS === */}
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-5">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-            <Wrench size={18} className="text-orange-600" /> Portfolio
+            <Wrench size={18} className="text-orange-600" /> Competences & prestations
           </h2>
 
-          <TagInput
-            label="Competences"
-            placeholder="Ex: Electricite, Plomberie, Domotique..."
+          <TagInput label="Competences" placeholder="Ex: Electricite, Plomberie, Domotique..."
             tags={form.competences}
             onAdd={(v) => setForm({ ...form, competences: [...form.competences, v] })}
             onRemove={(v) => setForm({ ...form, competences: form.competences.filter((c) => c !== v) })}
-            color="bg-orange-50 text-orange-700"
-          />
+            color="bg-orange-50 text-orange-700" />
 
-          <TagInput
-            label="Prestations proposees"
-            placeholder="Ex: Renovation complete, Mise aux normes NF C 15-100..."
+          <TagInput label="Prestations proposees" placeholder="Ex: Renovation complete, Mise aux normes NF C 15-100..."
             tags={form.prestations}
             onAdd={(v) => setForm({ ...form, prestations: [...form.prestations, v] })}
             onRemove={(v) => setForm({ ...form, prestations: form.prestations.filter((c) => c !== v) })}
-            color="bg-purple-50 text-purple-700"
-          />
+            color="bg-purple-50 text-purple-700" />
 
-          <TagInput
-            label="Certifications & garanties"
-            placeholder="Ex: Assurance decennale, RGE, Qualibat..."
+          <TagInput label="Certifications & garanties" placeholder="Ex: Assurance decennale, RGE, Qualibat..."
             tags={form.certifications}
             onAdd={(v) => setForm({ ...form, certifications: [...form.certifications, v] })}
             onRemove={(v) => setForm({ ...form, certifications: form.certifications.filter((c) => c !== v) })}
-            color="bg-blue-50 text-blue-700"
-          />
+            color="bg-blue-50 text-blue-700" />
         </div>
 
         {/* === CONTACT === */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-4">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
             <Briefcase size={18} className="text-green-600" /> Contact & infos
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Telephone *</label>
               <input type="tel" required value={form.telephone} onChange={(e) => setForm({ ...form, telephone: e.target.value })}
@@ -340,7 +614,7 @@ export default function MiniSitePage() {
               placeholder="Ex: Paris et petite couronne (92, 93, 94)"
               className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                 <Clock size={14} /> Horaires
@@ -359,14 +633,14 @@ export default function MiniSitePage() {
         </div>
 
         {/* === THEME === */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-4">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
             <Palette size={18} className="text-purple-600" /> Apparence
           </h2>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {THEMES.map((t) => (
               <button key={t.value} type="button" onClick={() => setForm({ ...form, theme: t.value })}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all min-h-[44px]
                   ${form.theme === t.value ? 'border-gray-900 bg-gray-50' : 'border-gray-100 hover:border-gray-200'}`}>
                 <div className={`w-8 h-8 rounded-full ${t.color}`} />
                 <span className="text-xs font-medium text-gray-700">{t.label}</span>
@@ -377,7 +651,7 @@ export default function MiniSitePage() {
 
         {/* Actif toggle */}
         {!isNew && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-gray-900">Site actif</p>
@@ -400,14 +674,14 @@ export default function MiniSitePage() {
         <button type="submit"
           disabled={saving || !form.nomEntreprise || !form.slug || !form.telephone || !form.email || !form.metier}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-xl font-semibold text-base
-            active:scale-[0.98] transition-transform disabled:opacity-50 disabled:pointer-events-none">
+            active:scale-[0.98] transition-transform disabled:opacity-50 disabled:pointer-events-none min-h-[56px]">
           <Save size={20} />
           {saving ? 'Enregistrement...' : (isNew ? 'Creer mon mini-site' : 'Enregistrer')}
         </button>
 
         {!isNew && form.slug && (
           <a href={`/site/${form.slug}`} target="_blank" rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-6 py-4 rounded-xl font-semibold text-base hover:bg-gray-200 transition-colors">
+            className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-6 py-4 rounded-xl font-semibold text-base hover:bg-gray-200 transition-colors min-h-[56px]">
             <ExternalLink size={18} /> Voir mon site
           </a>
         )}
