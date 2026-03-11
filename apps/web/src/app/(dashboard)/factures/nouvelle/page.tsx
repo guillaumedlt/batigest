@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Save,
@@ -80,6 +80,7 @@ function NouvelleFacturePage() {
   const [contactId, setContactId] = useState(searchParams.get('contactId') || '');
   const [contactSearch, setContactSearch] = useState('');
   const [showContactDropdown, setShowContactDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [chantiers, setChantiers] = useState<ChantierOption[]>([]);
   const [chantierId, setChantierId] = useState(searchParams.get('chantierId') || '');
   const [factureType, setFactureType] = useState('CLASSIQUE');
@@ -98,6 +99,23 @@ function NouvelleFacturePage() {
   useEffect(() => {
     fetch('/api/contacts').then((r) => r.json()).then(setContacts);
   }, []);
+
+  // Fermer le dropdown au clic exterieur
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowContactDropdown(false);
+      }
+    }
+    if (showContactDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside as unknown as EventListener);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside as unknown as EventListener);
+      };
+    }
+  }, [showContactDropdown]);
 
   // Charger les chantiers
   useEffect(() => {
@@ -261,7 +279,7 @@ function NouvelleFacturePage() {
           {/* Client */}
           <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm">
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Client</h2>
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               {selectedContact ? (
                 <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl">
                   <div>
