@@ -265,16 +265,16 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Version desktop — tableau */}
-            <div className="hidden md:block">
-              <table className="w-full">
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left text-xs font-medium text-gray-400 px-6 py-2">Designation</th>
-                    <th className="text-right text-xs font-medium text-gray-400 px-4 py-2">Qte</th>
-                    <th className="text-left text-xs font-medium text-gray-400 px-2 py-2">Unite</th>
-                    <th className="text-right text-xs font-medium text-gray-400 px-4 py-2">PU HT</th>
-                    <th className="text-right text-xs font-medium text-gray-400 px-4 py-2">TVA</th>
-                    <th className="text-right text-xs font-medium text-gray-400 px-6 py-2">Total HT</th>
+                    <th className="text-right text-xs font-medium text-gray-400 px-3 py-2 whitespace-nowrap w-16">Qte</th>
+                    <th className="text-left text-xs font-medium text-gray-400 px-2 py-2 w-14">Unite</th>
+                    <th className="text-right text-xs font-medium text-gray-400 px-3 py-2 whitespace-nowrap w-24">PU HT</th>
+                    <th className="text-right text-xs font-medium text-gray-400 px-3 py-2 whitespace-nowrap w-16">TVA</th>
+                    <th className="text-right text-xs font-medium text-gray-400 px-6 py-2 whitespace-nowrap w-28">Total HT</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -284,11 +284,11 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                         <p className="text-sm font-medium text-gray-900">{l.designation}</p>
                         {l.description && <p className="text-xs text-gray-400 mt-0.5">{l.description}</p>}
                       </td>
-                      <td className="text-right px-4 py-3 text-sm text-gray-600">{Number(l.quantite)}</td>
-                      <td className="px-2 py-3 text-sm text-gray-400">{l.unite}</td>
-                      <td className="text-right px-4 py-3 text-sm text-gray-600">{formatEuros(l.prixUnitaireHT)}</td>
-                      <td className="text-right px-4 py-3 text-sm text-gray-400">{Number(l.tauxTVA)}%</td>
-                      <td className="text-right px-6 py-3 text-sm font-medium text-gray-900">{formatEuros(l.totalHT)}</td>
+                      <td className="text-right px-3 py-3 text-sm text-gray-600 whitespace-nowrap">{Number(l.quantite)}</td>
+                      <td className="px-2 py-3 text-sm text-gray-400 whitespace-nowrap">{l.unite}</td>
+                      <td className="text-right px-3 py-3 text-sm text-gray-600 whitespace-nowrap">{formatEuros(l.prixUnitaireHT)}</td>
+                      <td className="text-right px-3 py-3 text-sm text-gray-400 whitespace-nowrap">{Number(l.tauxTVA)}%</td>
+                      <td className="text-right px-6 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{formatEuros(l.totalHT)}</td>
                     </tr>
                   ))}
                 </tbody>
