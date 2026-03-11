@@ -47,6 +47,14 @@ type DevisDetail = {
   };
   chantier: { id: string; nom: string } | null;
   lignes: DevisLigne[];
+  factures: {
+    id: string;
+    numero: string;
+    type: string;
+    statut: string;
+    totalTTC: string;
+    dateEmission: string;
+  }[];
 };
 
 const STATUT_LABELS: Record<string, string> = {
@@ -444,6 +452,46 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               )}
             </div>
           </div>
+
+          {/* Factures liees */}
+          {devis.factures && devis.factures.length > 0 && (
+            <div className="bg-white rounded-2xl p-4 md:p-5 lg:p-6 shadow-sm">
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                Factures liees ({devis.factures.length})
+              </h2>
+              <div className="space-y-2">
+                {devis.factures.map((f) => (
+                  <Link key={f.id} href={`/factures/${f.id}`}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50
+                               active:bg-gray-100 transition-colors min-h-[48px]">
+                    <div className="flex items-center gap-3">
+                      <Receipt size={18} className="text-gray-400" />
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">{f.numero}</p>
+                        <p className="text-xs text-gray-400">
+                          {f.type !== 'CLASSIQUE' ? f.type + ' — ' : ''}
+                          {new Date(f.dateEmission).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-sm text-gray-900">{formatEuros(f.totalTTC)}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        f.statut === 'PAYEE' ? 'bg-green-100 text-green-700' :
+                        f.statut === 'EMISE' ? 'bg-blue-100 text-blue-700' :
+                        f.statut === 'ANNULEE' ? 'bg-red-100 text-red-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {f.statut === 'PAYEE' ? 'Payee' : f.statut === 'EMISE' ? 'Emise' :
+                         f.statut === 'PAYEE_PARTIELLEMENT' ? 'Partiel' :
+                         f.statut === 'ANNULEE' ? 'Annulee' : 'Brouillon'}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

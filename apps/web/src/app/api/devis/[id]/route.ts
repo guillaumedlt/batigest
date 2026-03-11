@@ -21,6 +21,11 @@ export async function GET(
       contact: true,
       chantier: { select: { id: true, nom: true } },
       lignes: { orderBy: { ordre: 'asc' } },
+      factures: {
+        where: { deletedAt: null },
+        select: { id: true, numero: true, type: true, statut: true, totalTTC: true, dateEmission: true },
+        orderBy: { dateEmission: 'desc' },
+      },
     },
   });
 
