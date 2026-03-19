@@ -183,9 +183,9 @@ export async function DELETE(
   }
 
   // On ne peut supprimer qu'un brouillon
-  if (existing.statut !== 'BROUILLON') {
+  if (existing.statut !== 'BROUILLON' && existing.statut !== 'ANNULEE') {
     return NextResponse.json(
-      { error: 'Seuls les brouillons peuvent etre supprimes. Creez un avoir pour annuler.' },
+      { error: 'Seuls les brouillons et factures annulees peuvent etre supprimes.' },
       { status: 400 },
     );
   }

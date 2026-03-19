@@ -217,7 +217,7 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
             )}
           </div>
         </div>
-        {facture.statut === 'BROUILLON' && (
+        {(facture.statut === 'BROUILLON' || facture.statut === 'ANNULEE') && (
           <button onClick={handleDelete}
             className="p-2 rounded-xl hover:bg-red-50 active:bg-red-100 transition-colors"
             aria-label="Supprimer">
@@ -462,6 +462,15 @@ export default function FactureDetailPage({ params }: { params: Promise<{ id: st
                              active:bg-red-100 transition-colors min-h-[48px] disabled:opacity-50">
                   <Ban size={20} className="text-red-500" />
                   <span className="font-medium text-red-600">Annuler</span>
+                </button>
+              )}
+
+              {facture.statut === 'ANNULEE' && (
+                <button onClick={handleDelete} disabled={updating}
+                  className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-50
+                             active:bg-red-100 transition-colors min-h-[48px] disabled:opacity-50">
+                  <Trash2 size={20} className="text-red-500" />
+                  <span className="font-medium text-red-600">Supprimer</span>
                 </button>
               )}
             </div>
